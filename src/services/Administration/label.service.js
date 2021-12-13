@@ -13,7 +13,21 @@ export default class LabelService {
 
 
   async listAllLabels() {
-    return null;    
+    try {
+      const url = `${API_URL}/public/labels`;
+      const params = {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+        },
+      };
+      const response = await fetch(url, params);
+      return response.json();
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 
   async removeLabel(label) {
@@ -22,5 +36,24 @@ export default class LabelService {
 
   async showLabel(nameLabel) {
     return null;
+  }
+
+  async searchEventByLabel(label) {
+    try {
+      const url = `${API_URL}/public/administration/labels/search/by-name`;
+      const params = {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(label),
+      };
+      const response = await fetch(url, params);
+      return response.json();
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 }

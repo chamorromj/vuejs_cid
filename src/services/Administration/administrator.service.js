@@ -6,7 +6,7 @@ export default class AdministratorService {
         return null;
     }
 
-    async listAdministratos(){
+    async listAdministrators(){
         return null;
     }
 

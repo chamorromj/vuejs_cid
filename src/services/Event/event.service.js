@@ -1,4 +1,5 @@
 import { API_URL } from "../../utils/constants";
+import UserService from "src/services/Profile/user.service";
 
 export default class EventService {
   async listAllEvents() {
@@ -10,8 +11,30 @@ export default class EventService {
 }
 
   async findEventsByName(text) {
-    return null;
-}
+    const userService = new UserService();
+    const token = userService.getToken();
+    try {
+      const event = {
+        name: text,
+      };
+      console.log(event);
+      const url = `${API_URL}/events/search/by-name`;
+      const params = {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(event),
+      };
+      const response = await fetch(url, params);
+      return response.json();
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 
   async getEventById(eventId) {
     return null;

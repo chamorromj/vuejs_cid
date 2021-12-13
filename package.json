@@ -12,7 +12,10 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "core-js": "^3.6.5",
-    "quasar": "^2.0.0"
+    "quasar": "^2.0.0",
+    "sweetalert2": "^11.3.0",
+    "vue-router": "^3.5.3",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
