@@ -1,13 +1,32 @@
 <template>
-  <q-page class="flex flex-center">
-    <h3>Culture In Da House</h3>
+  <q-page class="flex">
+    <ListEvents :events="events" />
   </q-page>
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
+import ListEvents from "components/Event/EventListComponent.vue";
+import EventService from "src/services/EventModule/event.service.js";
+import { useStore } from "vuex";
 
 export default defineComponent({
-  name: "PageIndex",
+  name: "Index",
+  components: {
+    ListEvents,
+  },
+  setup() {
+    let events = ref({});
+    const store = useStore();
+
+    onMounted(async () => {
+      const eventService = new EventService();
+      const response = await eventService.listAllEvents();
+      store.commit("event/setEvents", response);
+      events.value = await response;
+    });
+
+    return { events};
+  },
 });
 </script>

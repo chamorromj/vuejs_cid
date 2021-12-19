@@ -1,5 +1,6 @@
 <template>
   <div class="q-pa-md">
+
     <div class="q-gutter-md row relative-position">
       <q-input
         v-model="text"
@@ -20,10 +21,9 @@
           text-weight-bold
           absolute-right
           q-mt-xl
-          shadow-2
           text-black
         "
-        style="top: 25px; width: 92%"
+        style="top: 20px; width: 92%; background-color: gray"
       >
         <q-list bordered separator class="bg-white">
           <q-item
@@ -43,8 +43,8 @@
 </template>
 
 <script>
-import { ref } from "vue";
-import LabelService from "../../services/Administration/label.service";
+import {onMounted, ref} from "vue";
+import LabelService from "../../services/Administration/label.service.js";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
@@ -54,13 +54,14 @@ export default {
     const router = useRouter();
     const text = ref("");
 
+
     const findLabels = async (text) => {
       if (text.length) {
         const labelService = new LabelService();
         const label = {
           name: text,
         };
-        const results = await labelService.searchEventByLabel(label);
+        const results = await labelService.searchLabelByName(label);
         const res = [];
         if ((results != null) && (results.length > 0))
           results.forEach((element) => res.push(element));
@@ -74,8 +75,9 @@ export default {
     };
 
     const emptyResults = () => {
-      searchResults.value = null;
-      text.value = "";
+      text.value = '';
+      searchResults.value = [];
+
     };
 
     return {

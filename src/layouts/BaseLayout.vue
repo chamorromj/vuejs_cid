@@ -1,10 +1,10 @@
 <template>
-  <q-layout view="lHh lpr lFf">
+  <q-layout view="hHh lpr fFf">
     <q-header elevated class="bg-primary text-white">
-      <MenuBar />
+      <MenuBar/>
     </q-header>
 
-    <LeftDrawer />
+    <LeftDrawer v-model="sideMenuOpen"/>
 
     <q-page-container>
       <router-view />
@@ -16,14 +16,14 @@
 
 <script>
 import { useStore } from "vuex";
-import { defineAsyncComponent } from "vue";
+import {computed, defineAsyncComponent} from "vue";
+
 export default {
-  name: "BaseLayout",
+  name: "MainLayout",
   components: {
     LeftDrawer: defineAsyncComponent(() =>
       import("../components/Layout/LeftDrawer.vue")
     ),
-
     Footer: defineAsyncComponent(() =>
       import("../components/Layout/Footer.vue")
     ),
@@ -31,8 +31,20 @@ export default {
       import("../components/Layout/MenuBar.vue")
     ),
   },
-  setup() {
-    return {};
-  },
+  setup(){
+    const store = useStore()
+    return{
+      sideMenuOpen: computed({
+        get() {
+          return store.getters['ui/isSideMenuOpen']
+        },
+        set(val) {
+          store.commit('ui/toggleSideMenu')
+        }
+      }),
+    }
+  }
+
+
 };
 </script>

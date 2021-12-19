@@ -4,6 +4,7 @@ import user from "./user";
 import event from "./event";
 import media from "./media";
 import administration from "./administration";
+import ui from "./ui"
 
 export default store(function (/* { ssrContext } */) {
   const Store = createStore({
@@ -11,7 +12,8 @@ export default store(function (/* { ssrContext } */) {
       user,
       event,
       media,
-      administration
+      administration,
+      ui
     },
 
     // enable strict mode (adds overhead!)

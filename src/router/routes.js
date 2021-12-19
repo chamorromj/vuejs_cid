@@ -42,7 +42,7 @@ const routes = [
       {
         path: "labels/:id",
         name: "labels",
-        component: () => import("pages/Event/EventsByLabel.vue"),
+        component: () => import("pages/Event/EventsByLabelView.vue"),
       },
       {
         path: "event/:id",

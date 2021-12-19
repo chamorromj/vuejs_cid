@@ -13,6 +13,7 @@
         <template v-slot:append>
           <q-icon name="search" @click="findEvents(textName)" />
         </template>
+
       </q-input>
       <div
         class="
@@ -24,7 +25,7 @@
           bg-gray-2
           text-black
         "
-        style="top: 25px; width: 92%"
+        style="top: 15px; width: 92%"
       >
         <q-list bordered separator class="bg-white">
           <q-item
@@ -45,7 +46,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import {ref} from "vue";
 import { useStore } from "vuex";
 import EventService from "../../services/Event/event.service";
 import { useRouter } from "vue-router";
@@ -57,26 +58,26 @@ export default {
     const router = useRouter();
     const textName = ref(null);
 
+
+
+
     const findEvents = async (text) => {
-      console.log(text);
       if (text.length) {
         const eventService = new EventService();
         const results = await eventService.findEventsByName(text);
-        console.log(results);
         const res = [];
         results.forEach((element) => res.push(element));
-        console.log(res.slice(0, 3));
         searchResults.value = res;
       }
     };
 
     const emptyResults = () => {
-      console.log("emptying");
-      searchResults.value = null;
+      searchResults.value = [];
       textName.value = "";
     };
 
     const goToEvent = (idEvent) => {
+      console.log(idEvent)
       emptyResults();
       router.push({ name: "event", params: { id: idEvent } });
     };

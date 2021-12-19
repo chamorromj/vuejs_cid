@@ -1,2 +1,3 @@
-export function someMutation (/* state */) {
+export function changeElement(state, element) {
+  state.element = element;
 }

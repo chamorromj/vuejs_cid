@@ -1,43 +1,165 @@
 <template>
-  <q-toolbar class="bg-primary text-black shadow-2" glossy>
-    <q-toolbar-title>
-      <div class="text-weight-bold">Welcome</div>
-    </q-toolbar-title>
+  <q-toolbar class="bg-primary text-black shadow-2">
+    <q-avatar class="lt-sm">
+      <img src="~assets/avatar_logo.png" to="/">
+    </q-avatar>
+    <q-item-label header class="gt-xs cursor-pointer justify-center"  >
+      <img
+        alt="CultureInDaHouse logo"
+        src="~assets/logo.png"
+        style="width: 200px"
+        to="/"
+      />
+    </q-item-label>
+    <q-btn flat round dense icon="search" class="q-mr-sm" @click="toggleSideMenu">
+      <q-tooltip>Search options</q-tooltip>
+    </q-btn>
 
-    <SelectEventByName class="q-mr-lg" />
 
-    <SelectEventByLabel class="q-mr-lg" />
+    <q-space/>
 
-    <q-separator vertical inset class="q-ml-md" />
 
-    <q-btn
-      flat
-      round
-      dense
-      label="Register"
-      class="q-mx-md"
-      to="/register"
-      v-if="!user"
-    />
-    <q-separator vertical inset />
-    <q-btn
-      flat
-      round
-      dense
-      label="Login"
-      class="q-mx-md"
-      to="/login"
-      v-if="!user"
-    />
+
 
     <div v-if="user">
-      <span class="txt-subtitle2 text-weight-bold q-mx-sm"
-        ><template v-if="user.surname">{{ user.surname }},</template>
-        {{ user.username }}</span
-      >
+      <span class="txt-subtitle2 text-weight-bold q-mx-sm gt-sm">{{ user.username }}</span>
     </div>
+
     <q-btn-dropdown
-      v-if="!isAdminUser && !isSuperAdminUser && user"
+      v-if="isSuperAdminUser"
+      flat
+      top
+      start
+      round
+      dense
+      icon="admin_panel_settings"
+      class="q-mr-xs"
+    >
+      <q-list>
+        <q-item clickable v-close-popup to="/labels-list">
+          <q-item-section avatar>
+            <q-avatar
+              icon="label"
+              color="primary"
+              size="md"
+              text-color="white"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-subtitle2 text-bold"
+            >Labels</q-item-label
+            >
+          </q-item-section>
+        </q-item>
+        <q-item clickable v-close-popup to="/administrators-list">
+          <q-item-section avatar>
+            <q-avatar
+              icon="manage_accounts"
+              color="primary"
+              size="md"
+              text-color="white"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-subtitle2 text-bold"
+            >Administrators</q-item-label
+            >
+          </q-item-section>
+        </q-item>
+        <q-item clickable v-close-popup to="/categories-list">
+          <q-item-section avatar>
+            <q-avatar
+              icon="category"
+              color="primary"
+              size="md"
+              text-color="white"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-subtitle2 text-bold"
+            >Categories</q-item-label
+            >
+          </q-item-section>
+        </q-item>
+        <q-item clickable v-close-popup to="/organizers-list">
+          <q-item-section avatar>
+            <q-avatar
+              icon="business_center"
+              color="primary"
+              size="md"
+              text-color="white"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-subtitle2 text-bold"
+            >Event Organizers</q-item-label
+            >
+          </q-item-section>
+        </q-item>
+
+        <q-item clickable v-close-popup to="/questions-list">
+          <q-item-section avatar>
+            <q-avatar
+              icon="format_list_bulleted"
+              color="primary"
+              text-color="white"
+              size="md"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-subtitle2 text-bold">Questions</q-item-label>
+          </q-item-section>
+        </q-item>
+
+      </q-list>
+    </q-btn-dropdown>
+
+    <q-btn-dropdown
+      v-else-if="isAdminUser"
+      flat
+      top
+      start
+      round
+      dense
+      icon="admin_panel_settings"
+      class="q-mr-xs"
+    >
+      <q-list>
+        <q-item clickable v-close-popup to="/event-list">
+          <q-item-section avatar>
+            <q-avatar
+              icon="local_activity"
+              color="primary"
+              size="md"
+              text-color="white"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-subtitle2 text-bold"
+            >Events</q-item-label
+            >
+          </q-item-section>
+        </q-item>
+
+        <q-item clickable v-close-popup to="/questions-list">
+          <q-item-section avatar>
+            <q-avatar
+              icon="format_list_bulleted"
+              color="primary"
+              text-color="white"
+              size="md"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-subtitle2 text-bold">Questions</q-item-label>
+          </q-item-section>
+        </q-item>
+
+      </q-list>
+    </q-btn-dropdown>
+
+    <q-btn-dropdown
+      v-else-if="user"
       flat
       top
       start
@@ -47,7 +169,7 @@
       class="q-mr-xs"
     >
       <q-list>
-        <q-item clickable v-close-popup to="/update-user">
+        <q-item clickable v-close-popup @click="goToUpdateUser()">
           <q-item-section avatar>
             <q-avatar
               icon="account_box"
@@ -58,7 +180,7 @@
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-subtitle2 text-bold"
-              >User Data</q-item-label
+            >User Data</q-item-label
             >
           </q-item-section>
         </q-item>
@@ -73,9 +195,7 @@
             />
           </q-item-section>
           <q-item-section>
-            <q-item-label class="text-subtitle2 text-bold"
-              >Purchases</q-item-label
-            >
+            <q-item-label class="text-subtitle2 text-bold">Orders</q-item-label>
           </q-item-section>
         </q-item>
         <q-item clickable v-close-popup to="/favorites">
@@ -89,12 +209,32 @@
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-subtitle2 text-bold"
-              >Favorites</q-item-label
+            >Favorites</q-item-label
             >
           </q-item-section>
         </q-item>
       </q-list>
     </q-btn-dropdown>
+    <div v-else class="row">
+      <q-btn
+        flat
+        round
+        dense
+        label="Register"
+        class="q-mx-md"
+        to="/register"
+      />
+      <q-separator vertical inset/>
+      <q-btn
+        flat
+        round
+        dense
+        label="Login"
+        class="q-mx-md"
+        to="/login"
+      />
+    </div>
+
 
     <q-btn
       name="logout"
@@ -113,36 +253,35 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, defineAsyncComponent } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+
 export default {
   name: "MenuBar",
-  components: {
-    SelectEventByName: defineAsyncComponent(() =>
-      import("../Event/SelectEventByName.vue")
-    ),
-    SelectEventByLabel: defineAsyncComponent(() =>
-      import("../Event/SelectEventByLabel.vue")
-    ),
-  },
   setup() {
-    const leftDrawerOpen = ref(false);
 
-    const store = useStore();
-    const router = useRouter();
-    const user = computed(() => store.getters["user/getUser"]);
+    const store = useStore()
+    const router = useRouter()
+    const user = store.getters["user/getUser"]
 
     const logout = () => {
       store.commit("user/logout");
       location.replace("/");
     };
 
+    const goToUpdateUser = ()=>{
+      router.push("/update-user")
+    }
+
     return {
+      goToUpdateUser,
       isAdminUser: computed(() => store.getters["user/isAdminUser"]),
       isSuperAdminUser: computed(() => store.getters["user/isSuperAdminUser"]),
       user,
       logout,
+      toggleSideMenu() { store.commit('ui/toggleSideMenu') },
+
     };
   },
 };
