@@ -5,7 +5,7 @@ import { computed } from "vue";
 export default class UserService {
   async registerUser(formData) {
     try {
-      const url = `${API_URL}/users`;
+      const url = `${API_URL}/register`;
       const params = {
         method: "POST",
         mode: "cors",
@@ -15,8 +15,11 @@ export default class UserService {
         body: JSON.stringify(formData),
       };
       const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      if(!response.ok){
+        return response.ok
+      } else{
+        return response.json();
+      }
     } catch (error) {
       console.log(error);
       return null;
@@ -24,17 +27,23 @@ export default class UserService {
   }
 
   async updateUser(user) {
+    const store = useStore()
+    const token = this.getToken();
     try {
       const url = `${API_URL}/users/` + user.id;
       const params = {
         method: "PUT",
         mode: "cors",
         headers: {
+          Authorization: "Bearer " + token,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(user),
       };
       const response = await fetch(url, params);
+      if(response.status===204){
+        await store.dispatch("user/refreshLogin")
+      }
       const result = await response.json();
       return result;
     } catch (error) {
@@ -47,20 +56,53 @@ export default class UserService {
     const store = useStore();
     return computed(() => store.getters["user/getUser"]);
   }
+  // async showUser(id) {
+  //   try {
+  //     const response = await fetch(`${API_URL}/users/` + id);
+  //     const result = await response.json();
+  //     return result;
+  //   } catch (error) {
+  //     console.log(error);
+  //     return null;
+  //   }
+  // }
 
   async getUserById(id) {
+    const store = useStore();
+    const token = this.getToken();
     try {
-      const url = `${API_URL}/users/` + id;
+      const url = `${API_URL}/users/${id}`;
       const params = {
         method: "GET",
         mode: "cors",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+          Accepts: "application/json"
         },
       };
       const response = await fetch(url, params);
+      if(response.status===204){
+        await store.dispatch("user/refreshLogin")
+      }
       const result = await response.json();
       return result;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async getLanguages(){
+    try {
+      const url = `${API_URL}/public/administration/languages`;
+      const params = {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          Accept: "application/json"
+        },
+      };
+      const response = await fetch(url, params);
+      return response.json();
     } catch (error) {
       return error;
     }
@@ -78,13 +120,14 @@ export default class UserService {
         body: JSON.stringify(formData),
       };
       const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      return response.json();
     } catch (error) {
       console.log(error);
       return null;
     }
   }
+
+
 
   async logout() {
     const store = useStore();
@@ -98,12 +141,18 @@ export default class UserService {
     return store.getters["user/getUser"];
   }
 
+
   setToken(token, user) {
+    console.log("Setting token");
+    console.log(token);
+    console.log(user);
     localStorage.setItem("token", token);
+    localStorage.setItem("userId", user);
   }
 
   getToken() {
-    return localStorage.getItem("token");
+    let token = localStorage.getItem("token");
+    return token;
   }
 
   removeToken() {

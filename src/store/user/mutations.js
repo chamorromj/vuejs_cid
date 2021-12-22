@@ -1,27 +1,23 @@
+import { Notify } from 'quasar'
+
 export function changeUser(state, user) {
-    state.user = user;
-  }
+  state.user = user;
+}
 
-  export function removeUser(state) {
-    state.user = null;
-  }
+export function removeUser(state) {
+  state.user = null;
+}
 
-  export function addFavorite(state, favorite) {
+export function addRatting(state, ratting) {
+  delete ratting.user;
+  state.user.ratings.push(ratting);
+}
 
-  }
+export function loginUser(state, {user, token}) {
+  state.user = user;
+  state.token = token;
 
-  export function addRating(state, rating) {
-
-  }
-
-  export function loginUser(state, { user, token }) {
-    if (token) {
-      localStorage.setItem("token", token);
-      state.token = token;
-    }
-    localStorage.setItem("userId", user.id);
-
-    state.user = user;
+  if(user){
     const role = user.roleId;
     switch (role) {
       case 3:
@@ -34,16 +30,24 @@ export function changeUser(state, user) {
         state.status = "authenticated";
     }
   }
+}
 
-  export function updateUser(state, user) {
-    state.user = user;
-  }
+export function addFavorite(state, favorite) {
+  state.user.favorites.push(favorite);
+}
 
-  export const logout = (state) => {
-    state.user = null;
-    state.token = null;
-    state.status = "not-authenticated";
+export function updateUser(state, user) {
+  state.user = user;
+}
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-  };
+export const logout = (state) => {
+  state.user = null;
+  state.token = null;
+  state.status = "not-authenticated";
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("userId");
+  Notify.create({
+    type: 'warning', message: 'You are logged out of the system'
+  })
+};

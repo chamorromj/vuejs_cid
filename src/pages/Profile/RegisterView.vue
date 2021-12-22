@@ -10,10 +10,10 @@
       class="q-gutter-md q-mt-lg"
     >
       <div class="row q-px-lg justify-center">
-        <div class="col-4">
+        <div class="col-12 col-md-4 ">
           <q-input
-            class="q-mx-md"
-            v-model="userForm.username"
+            class="q-mx-md q-mb-xs"
+            v-model="userForm.name"
             filled
             type="text"
             hint="Name"
@@ -23,8 +23,9 @@
             ]"
           />
         </div>
-        <div class="col-4">
+        <div class="col-12 col-md-4">
           <q-input
+            class="q-mx-md q-mb-xs"
             v-model="userForm.surname"
             filled
             type="text"
@@ -38,9 +39,9 @@
         </div>
       </div>
       <div class="row q-px-lg justify-center">
-        <div class="col-4">
+        <div class="col-12 col-md-4">
           <q-input
-            class="q-mx-md"
+            class="q-mx-md q-mb-xs"
             v-model="userForm.nif"
             filled
             type="text"
@@ -51,25 +52,25 @@
             ]"
           />
         </div>
-        <div class="col-4">
+        <div class="col-12 col-md-4">
           <q-input
-            v-model="userForm.email"
+            class="q-mx-md q-mb-xs"
+            v-model="userForm.username"
             filled
             type="email"
             hint="Email"
             lazy-rules
             :rules="[
-              (val) =>
-                (val !== null && val !== '') || 'Please type your password',
+              (val) => (val !== null && val !== '') || 'Please type your email',
               isValidEmail,
             ]"
           />
         </div>
       </div>
       <div class="row q-px-lg justify-center">
-        <div class="col-4">
+        <div class="col-12 col-md-4">
           <q-input
-            class="q-mx-md"
+            class="q-mx-md q-mb-xs"
             v-model="userForm.password"
             filled
             :type="isPwd ? 'password' : 'text'"
@@ -89,8 +90,9 @@
             </template>
           </q-input>
         </div>
-        <div class="col-4">
+        <div class="col-12 col-md-4">
           <q-input
+            class="q-mx-md q-mb-xs"
             v-model="userForm.address"
             filled
             type="text"
@@ -107,50 +109,41 @@
       <div class="row q-px-lg justify-center">
         <div class="col-12 text-center q-pl-lg q-pt-md">
           <span class="subtitle1 text-weight-bold">Preferred Language:</span>
-          <q-radio
-            v-model="userForm.preferredLanguage"
-            val="EN"
-            label="English"
-          />
-          <q-radio
-            v-model="userForm.preferredLanguage"
-            val="CA"
-            label="Catalan"
-          />
-          <q-radio
-            v-model="userForm.preferredLanguage"
-            val="ES"
-            label="Spanish"
+          <q-option-group
+            spread
+            v-model="userForm.languageId"
+            :options="languages"
+            color="primary"
+            inline
           />
         </div>
       </div>
-      <div class="row justify-center">
-        <div class="col-8">
+      <div class="row justify-center col-12 col-md-8">
           <q-toggle
-            class="col-8 q-pl-lg"
             v-model="accept"
             label="I accept the license and terms"
           />
-        </div>
       </div>
       <div class="row q-px-lg justify-center">
-        <div class="col-8 q-pl-lg q-mt-md">
+<!--        <div class="col-12 col-md-8 q-pl-lg q-mt-md">-->
+
           <q-btn
+            class="col-12 col-md-8 q-my-sm q-mx-sm"
             icon-right="send"
             label="Register"
             type="submit"
             color="primary"
           />
 
-          <q-btn label="Reset" type="reset" color="secondary" class="q-ml-sm" />
+          <q-btn label="Reset" type="reset" color="blue" class="col-12 col-md-8 q-my-sm q-mx-sm" />
+          <q-btn label="Cancel" type="button" color="secondary" class="col-12 col-md-8 q-my-sm q-mx-sm" to="/"/>
         </div>
-      </div>
-      <div class="row q-px-lg justify-center">
+<!--      </div>-->
         <div
           class="
-            col-8
-            text-subtitle2 text-left
-            align-center
+            col-12 col-md-8
+            text-subtitle2
+            text-center
             text-weight-bold text-blue
             q-ma-lg
             cursor-pointer
@@ -159,50 +152,69 @@
         >
           Registered? Login instead
         </div>
-      </div>
+
     </q-form>
   </q-page>
 </template>
 
 <script>
-import { defineComponent, ref, computed } from "vue";
+import {defineComponent, onMounted, ref} from "vue";
 import { useRouter } from "vue-router";
-import { useStore } from "vuex";
 import Swal from "sweetalert2";
+import {useStore} from "vuex"
+import UserService from "src/services/Profile/user.service";
+import {Notify, useQuasar} from "quasar";
+
 export default defineComponent({
   name: "RegisterView",
+
   setup() {
     const router = useRouter();
     const store = useStore();
     const accept = ref(false);
+    const languages = ref([]);
+    const $q = useQuasar()
+    const userService = new UserService();
     const userForm = ref({
-      username: "",
+      name: "",
       surname: "",
       password: "",
-      preferredLanguage: "EN",
+      username: "",
+      languageId: 3,
       address: "",
-      email: "",
       nif: "",
     });
+
+    onMounted(async ()=>{
+      const langs = await userService.getLanguages();
+      for (let language of langs){
+        languages.value.push({value: language.id, label: language.name})
+      }
+    })
+
     const createUser = async (user) => {
       const resp = await store.dispatch("user/createUser", user);
       return resp;
     };
+
     const emptyForm = () => {
-      userForm.value.username = "";
+      userForm.value.name = "";
       userForm.value.surname = "";
       userForm.value.password = "";
-      userForm.value.preferredLanguage = "EN";
+      userForm.value.languageId = 3;
       userForm.value.address = "";
-      userForm.value.email = "";
+      userForm.value.username = "";
       userForm.value.nif = "";
     };
+
     return {
+      languages,
       userForm,
       emptyForm,
       isPwd: ref(true),
       accept,
       createUser,
+
       isValidEmail: (val) => {
         const emailPattern =
           /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
@@ -219,17 +231,20 @@ export default defineComponent({
             "warning"
           );
         } else {
-          const { ok, message } = await createUser(userForm.value);
-          if (ok) {
-            Swal.fire(
-              "Succesful register",
-              "You are logged into the system",
-              "success"
-            );
-            router.push("/");
-          } else {
-            Swal.fire("Error", message, "error");
+          const ok = await createUser(userForm.value);
+          if (!ok) {
+            Notify.create({
+              type: 'warning', message: "The username is in use. Try with another"
+            })
+            userForm.value.username = null
           }
+          else {
+            $q.notify({ type: 'positive', message: 'Great! Your user has been created and you are now logged in the system', color: 'blue' })
+
+            router.push("/");
+          }
+
+
         }
       },
       onReset: () => {

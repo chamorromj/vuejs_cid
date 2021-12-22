@@ -32,12 +32,12 @@ const routes = [
       {
         path: "order",
         name: "order",
-        component: () => import("pages/Event/EventOrderView.vue"),
+        component: () => import("components/Event/EventOrderView.vue"),
       },
       {
         path: "events/:category",
         name: "events",
-        component: () => import("pages/Event/EventListView.vue"),
+        component: () => import("pages/Event/EventsListView.vue"),
       },
       {
         path: "labels/:id",
@@ -104,6 +104,11 @@ const routes = [
         component: () => import("src/pages/Profile/EventProfileAddView.vue"),
       },
       {
+        path: "update-event/:id",
+        name: "UpdateEvent",
+        component: () => import("src/pages/Profile/EventProfileUpdateView.vue"),
+      },
+      {
         path: "add-administrator",
         name: "AdministratorAddView",
         component: () =>
@@ -145,9 +150,8 @@ const routes = [
   // but you can also remove it
   {
     path: "/:catchAll(.*)*",
-    component: () => import("src/pages/ErrorView.vue"),
+    component: () => import("pages/ErrorView.vue"),
   },
 ];
 
 export default routes;
-

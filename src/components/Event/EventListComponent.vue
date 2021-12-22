@@ -26,11 +26,11 @@ import EventDetailComponent from "components/Event/EventDetailComponent.vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import Swal from "sweetalert2";
-import EventService from "src/services/EventModule/event.service";
+import EventService from "src/services/Event/event.service";
 import {date, QSpinnerGears, useQuasar} from "quasar";
-import CategoryService from "src/services/AdministrationModule/category.service";
-import EventOrganizerService from "src/services/AdministrationModule/eventorganizer.service";
-import MediaService from "src/services/MediaModule/media.service";
+import CategoryService from "src/services/Administration/category.service";
+import EventOrganizerService from "src/services/Administration/eventorganizer.service";
+import MediaService from "src/services/Media/media.service";
 
 export default {
   name: "ListEvents",

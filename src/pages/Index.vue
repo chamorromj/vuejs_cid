@@ -7,7 +7,7 @@
 <script>
 import { defineComponent, onMounted, ref } from "vue";
 import ListEvents from "components/Event/EventListComponent.vue";
-import EventService from "src/services/EventModule/event.service.js";
+import EventService from "src/services/Event/event.service.js";
 import { useStore } from "vuex";
 
 export default defineComponent({
@@ -24,6 +24,7 @@ export default defineComponent({
       const response = await eventService.listAllEvents();
       store.commit("event/setEvents", response);
       events.value = await response;
+      console.log("Index mounted")
     });
 
     return { events};
