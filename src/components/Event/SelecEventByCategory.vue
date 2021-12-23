@@ -42,7 +42,7 @@ export default {
     const options = ref(stringOptions)
     const router = useRouter()
 
-    onMounted(async()=>{
+    onMounted(async() => {
       let categoryService = new CategoryService();
       stringOptions = await categoryService.listAllCategories()
     })
