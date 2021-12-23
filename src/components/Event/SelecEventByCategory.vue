@@ -51,7 +51,7 @@ export default {
       let sel = categorySelected.value
       categorySelected.value = null
       router.push({ name: "events", params: { category: sel } });
-    }
+      }
 
     return {
       filterByCategory,
@@ -76,3 +76,5 @@ export default {
   }
 }
 </script>
+
+<style></style>

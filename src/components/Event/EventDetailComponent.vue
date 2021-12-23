@@ -117,8 +117,9 @@
     </q-card-actions>
   </q-card>
 
-  <ShowSuggestionAddView :event="event" v-model="show_suggest"/>
+  <SuggestEventView :event="event" v-model="show_suggest"/>
 
+  <EventOrderView :event="event" v-model="show_order"/>
 </template>
 
 <script>
@@ -127,17 +128,18 @@ import {API_URL} from "src/utils/constants";
 import {date} from "quasar";
 import {useStore} from "vuex";
 import Swal from "sweetalert2";
-import ShowSuggestionAddView from "components/Event/SuggestEventView";
+import EventOrderView from "components/Event/EventOrderView";
+import SuggestEventView from "components/Event/SuggestEventView";
 
 export default {
   name: "EventData",
-  components: {ShowSuggestionAddView},
+  components: {SuggestEventView, EventOrderView,},
   props: {
     event: Object,
   },
   emits: ["addToFavorites", "goToDetail", "buyTickets"],
 
-  setup() {
+  setup(props) {
     const user = computed(() => store.getters["user/getUser"]);
     const store = useStore();
     const show_suggest = ref(false)
@@ -181,3 +183,4 @@ export default {
 
 
 </style>
+

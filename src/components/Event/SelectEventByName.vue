@@ -36,8 +36,8 @@
             style="width: 100%"
           >
             <q-item-section @click="goToEvent(result.id)">{{
-                result.name
-              }}</q-item-section>
+              result.name
+            }}</q-item-section>
           </q-item>
         </q-list>
       </div>
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import { useStore } from "vuex";
 import EventService from "../../services/Event/event.service";
 import { useRouter } from "vue-router";
@@ -61,7 +61,7 @@ export default {
 
 
 
-    const findEvents = async (text) => {
+     const findEvents = async (text) => {
       if (text.length) {
         const eventService = new EventService();
         const results = await eventService.findEventsByName(text);
@@ -92,3 +92,5 @@ export default {
   },
 };
 </script>
+
+<style></style>

@@ -1,6 +1,6 @@
 <template>
   <div class="row wrap">
-    <div v-if="events.length == 0" class="text-h5 text-bold q-ma-lg">
+    <div v-if="events.length === 0" class="text-h5 text-bold q-ma-lg">
       There are no events that fits the parameters you chose
     </div>
     <div v-for="event in events" :key="event.id" class="justify-between justify-md-evenly my-grid">
@@ -11,12 +11,7 @@
         v-on:buyTickets="buyTickets"
       />
     </div>
-    <!--    <q-inner-loading
-          :showing="visible"
-          label="Please wait..."
-          label-class="text-teal"
-          label-style="font-size: 1.1em"
-        />-->
+
   </div>
 </template>
 
@@ -52,7 +47,7 @@ export default {
     let eventsReceived = null
 
     onBeforeUnmount(() => {
-      $q.loading.hide()
+         $q.loading.hide()
     })
 
     onMounted(async () => {
