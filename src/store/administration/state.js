@@ -1,5 +1,11 @@
 export default function () {
   return {
-    element: null,
+    event: null,
+    eventLabels: [],
+    eventCategory: null,
+    events: [
+      {},
+      {}
+    ],
   };
 }

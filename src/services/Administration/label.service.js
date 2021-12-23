@@ -1,4 +1,4 @@
-import { API_URL } from "src/utils/constants";
+import { API_URL } from "../../utils/constants";
 import UserService from "../Profile/user.service";
 
 export default class LabelService {
@@ -17,7 +17,8 @@ export default class LabelService {
         body: JSON.stringify(label),
       };
       const response = await fetch(url, params);
-      return response.json();
+      const result = await response.json();
+      return result;
     } catch (error) {
       console.log(error);
       return null;
@@ -39,7 +40,9 @@ export default class LabelService {
         body: JSON.stringify(label),
       };
       const response = await fetch(url, params);
-      return response.json();
+      const result = await response.json();
+
+      return result;
     } catch (error) {
       console.log(error);
       return null;
@@ -57,7 +60,8 @@ export default class LabelService {
         },
       };
       const response = await fetch(url, params);
-      return response.json();
+      const result = await response.json();
+      return result;
     } catch (error) {
       console.log(error);
       return null;
@@ -93,7 +97,8 @@ export default class LabelService {
         },
       };
       const response = await fetch(url, params);
-      return response.json()
+      const result = await response.json()
+      return result;
     } catch (error) {
       console.log(error);
       return null;
@@ -115,7 +120,8 @@ export default class LabelService {
         body: JSON.stringify(label),
       };
       const response = await fetch(url, params);
-      return response.json();
+      const result = await response.json();
+      return result;
     } catch (error) {
       console.log(error);
       return null;

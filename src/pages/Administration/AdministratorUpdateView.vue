@@ -46,10 +46,9 @@
       />
 
       <q-input
-        filled
-        autogrow
-        type="password"
         v-model="password"
+        filled type="password"
+        hint="Password"
         label="Password"
         lazy-rules
         :rules="[
@@ -141,3 +140,5 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped></style>

@@ -28,6 +28,13 @@
     <div class="row q-pa-lg justify-center">
       <div class="col-12 col-md-8">
         <q-btn label="Assign" class="bg-primary full-width" @click="assignOrganizer()" />
+        <q-btn
+          label="Cancel"
+          type="button"
+          color="secondary"
+          to="/administrators-list"
+          class="bg-primary full-width"
+        />
       </div>
     </div>
   </q-page>
@@ -56,7 +63,7 @@ export default {
 
     onMounted(async () => {
       const administrator = computed(
-        () => store.getters["administrator/getAdministrator"]
+        () => store.getters["administration/getElement"]
       );
       administratorToUpdate.value = administrator.value;
       administratorName.value =
@@ -80,7 +87,7 @@ export default {
           const administratorService = new AdministratorService()
           let {ok} = await administratorService.assignAdministratorToEventOrganizer(administratorId.value, organizer_selected.value)
           if(ok){
-            await Swal.fire(
+            Swal.fire(
               "Assignation done!",
               organizer_selected.value.label +
               " has been assigned to " +
@@ -99,3 +106,5 @@ export default {
   },
 };
 </script>
+
+<style></style>
