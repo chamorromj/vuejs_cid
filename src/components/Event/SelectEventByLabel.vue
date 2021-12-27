@@ -33,8 +33,8 @@
             :key="result.id"
           >
             <q-item-section @click="goToEvent(result.id)">{{
-                result.name
-              }}</q-item-section>
+              result.name
+            }}</q-item-section>
           </q-item>
         </q-list>
       </div>
@@ -90,3 +90,4 @@ export default {
   },
 };
 </script>
+

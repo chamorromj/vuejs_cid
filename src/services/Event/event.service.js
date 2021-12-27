@@ -1,32 +1,18 @@
 import { API_URL } from "../../utils/constants";
-import UserService from "src/services/Profile/user.service";
+import { date } from 'quasar'
+import { useStore } from "vuex";
+import UserService from "../Profile/user.service";
 
 export default class EventService {
   async listAllEvents() {
-      return null;
-  }
-
-  async findEventsByLabel(label) {
-    return null;
-}
-
-  async findEventsByName(text) {
-    const userService = new UserService();
-    const token = userService.getToken();
     try {
-      const event = {
-        name: text,
-      };
-      console.log(event);
-      const url = `${API_URL}/events/search/by-name`;
+      const url = `${API_URL}/public/events`;
       const params = {
         method: "GET",
         mode: "cors",
         headers: {
-          Authorization: "Bearer " + token,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(event),
       };
       const response = await fetch(url, params);
       return response.json();
@@ -36,23 +22,138 @@ export default class EventService {
     }
   }
 
+  async findEventsByLabel(label) {
+    const userService = new UserService();
+    const token = userService.getToken();
+    try {
+      const url = `${API_URL}/public/events/search/by-label`;
+      const params = {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(label),
+      };
+      const response = await fetch(url, params);
+      const result = await response.json();
+      console.log(result);
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async findEventsByName(text) {
+    try {
+      const event = {
+        name: text,
+      };
+      const url = `${API_URL}/public/events/search/by-name`;
+      const params = {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(event),
+      };
+      const response = await fetch(url, params);
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
   async getEventById(eventId) {
-    return null;
-}
+    try {
+      const url = `${API_URL}/public/events/${eventId}`;
+      const params = {
+        method: "GET",
+        mode: "cors",
+      };
+      const response = await fetch(url, params);
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
 
   async findEventsByLabel(label) {
+  try {
+    const url = `${API_URL}/public/events/search/by-label`;
+    const params = {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(label),
+    };
+    const response = await fetch(url, params);
+    const result = await response.json();
+    console.log(result)
+    return result;
+  } catch (error) {
+    console.log(error);
     return null;
-}
+  }
+  }
 
   async findEventsByCategory(categoryId) {
-    return null;
-}
+    try {
+      let url = "";
+      if(typeof(categoryId) !== 'undefined') {
+        url = `${API_URL}/public/events/search/by-category/${categoryId}`;
+      } else {
+        url = `${API_URL}/public/events`;
+      }
+
+
+      const params = {
+        method: "GET",
+        mode: "cors",
+      };
+      const response = await fetch(url, params);
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 
   async showEvent(eventId) {
     return null;
   }
 
   async orderEvent(order) {
-    return null;
-}
+    const userService = new UserService();
+    const token = userService.getToken();
+    try {
+      const url = `${API_URL}/orders`;
+      const params = {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(order),
+      };
+      const response = await fetch(url, params);
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }

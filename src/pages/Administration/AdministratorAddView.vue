@@ -76,6 +76,7 @@
 import AdministratorService from "../../services/Administration/administrator.service";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import Swal from "sweetalert2";
 import {useQuasar} from "quasar";
 
 export default {
