@@ -1,8 +1,6 @@
-import { API_URL } from "../../utils/constants";
+import { API_URL } from "src/utils/constants";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
-import { computed } from "vue";
-import UserService from ".//user.service";
+import UserService from "../Profile/user.service";
 import EventService from "../Event/event.service";
 import EventOrganizerService from "src/services/Administration/eventorganizer.service";
 import CategoryService from "src/services/Administration/category.service";
@@ -24,6 +22,7 @@ export default class EventProfileService {
         body: JSON.stringify(event),
       };
       const response = await fetch(url, params);
+      console.log(response)
       return response.json();
     } catch (error) {
       console.log(error);
@@ -65,8 +64,7 @@ export default class EventProfileService {
         body: JSON.stringify(event),
       };
       const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      return response.ok
     } catch (error) {
       console.log(error);
       return null;
@@ -75,17 +73,19 @@ export default class EventProfileService {
 
   async showEvent(idEvent) {
     const store = useStore();
-      const eventService = new EventService();
-      const event = await eventService.getEventById(idEvent);
-      if (event){
-        const eventOrganizerService = new EventOrganizerService();
-        const categoryService = new CategoryService();
-        event.categoryName = await categoryService.getCategoryNameById(event.categoryId);
-        event.organizerName = await eventOrganizerService.getEventOrganizerNameById(event.eventOrganizerId);
-
-        store.commit("event/setEvent", event);
-      }
-      return event;
+    const eventService = new EventService();
+    const event = await eventService.getEventById(idEvent);
+    console.log(event)
+    if (event){
+      const eventOrganizerService = new EventOrganizerService();
+      const categoryService = new CategoryService();
+      const categoryName = await categoryService.getCategoryNameById(event.categoryId)
+      const organizerName = await eventOrganizerService.getEventOrganizerNameById(event.eventOrganizerId)
+      event.categoryName = categoryName
+      event.organizerName = organizerName
+      store.commit("event/setEvent", event);
+    }
+    return event;
 
   }
 

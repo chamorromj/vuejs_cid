@@ -3,12 +3,12 @@
     <q-avatar class="lt-sm">
       <img src="~assets/avatar_logo.png" to="/">
     </q-avatar>
-    <q-item-label header class="gt-xs cursor-pointer justify-center"  >
+    <q-item-label header class="gt-xs cursor-pointer justify-center">
       <img
         alt="CultureInDaHouse logo"
         src="~assets/logo.png"
         style="width: 200px"
-        to="/"
+        @click="$router.push('/')"
       />
     </q-item-label>
     <q-btn flat round dense icon="search" class="q-mr-sm" @click="toggleSideMenu">
@@ -21,8 +21,8 @@
 
 
 
-    <div v-if="user">
-      <span class="txt-subtitle2 text-weight-bold q-mx-sm gt-sm">{{ user.username }}</span>
+    <div v-if="userUsername">
+      <span class="txt-subtitle2 text-weight-bold q-mx-sm gt-sm">{{ userUsername }}</span>
     </div>
 
     <q-btn-dropdown
@@ -125,7 +125,7 @@
       class="q-mr-xs"
     >
       <q-list>
-        <q-item clickable v-close-popup to="/event-list">
+        <q-item clickable v-close-popup to="/events-list">
           <q-item-section avatar>
             <q-avatar
               icon="local_activity"
@@ -159,7 +159,7 @@
     </q-btn-dropdown>
 
     <q-btn-dropdown
-      v-else-if="user"
+      v-else-if="userUsername"
       flat
       top
       start
@@ -245,7 +245,7 @@
       class="q-mr-xs"
       @click="logout()"
       to="/"
-      v-if="user"
+      v-if="userUsername"
     >
       <q-tooltip> Log out </q-tooltip>
     </q-btn>
@@ -253,9 +253,11 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { ref, computed, onMounted, defineAsyncComponent } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import LabelService from "src/services/Administration/label.service";
+import LeftDrawer from "components/Layout/LeftDrawer";
 
 export default {
   name: "MenuBar",
@@ -264,6 +266,12 @@ export default {
     const store = useStore()
     const router = useRouter()
     const user = store.getters["user/getUser"]
+
+    /*onMounted(async () => {
+      const labelService = new LabelService();
+      const labels = await labelService.listAllLabels();
+      store.commit("label/setLabels", labels);
+    });*/
 
     const logout = () => {
       store.commit("user/logout");
@@ -278,6 +286,7 @@ export default {
       goToUpdateUser,
       isAdminUser: computed(() => store.getters["user/isAdminUser"]),
       isSuperAdminUser: computed(() => store.getters["user/isSuperAdminUser"]),
+      userUsername: computed(()=> store.getters["user/getUserUserName"]),
       user,
       logout,
       toggleSideMenu() { store.commit('ui/toggleSideMenu') },
@@ -286,5 +295,3 @@ export default {
   },
 };
 </script>
-
-<style></style>

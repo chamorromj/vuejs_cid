@@ -1,5 +1,3 @@
-import { Notify } from 'quasar'
-
 export function changeUser(state, user) {
   state.user = user;
 }
@@ -36,7 +34,7 @@ export function addFavorite(state, favorite) {
   state.user.favorites.push(favorite);
 }
 
-export function updateUser(state, user) {
+export function userUpdate(state, user) {
   state.user = user;
 }
 
@@ -47,7 +45,4 @@ export const logout = (state) => {
 
   localStorage.removeItem("token");
   localStorage.removeItem("userId");
-  Notify.create({
-    type: 'warning', message: 'You are logged out of the system'
-  })
 };

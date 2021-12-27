@@ -1,4 +1,4 @@
-import { API_URL } from "../../utils/constants";
+import { API_URL } from "src/utils/constants";
 import { useStore } from "vuex";
 import { computed } from "vue";
 
@@ -27,7 +27,6 @@ export default class UserService {
   }
 
   async updateUser(user) {
-    const store = useStore()
     const token = this.getToken();
     try {
       const url = `${API_URL}/users/` + user.id;
@@ -40,12 +39,8 @@ export default class UserService {
         },
         body: JSON.stringify(user),
       };
-      const response = await fetch(url, params);
-      if(response.status===204){
-        await store.dispatch("user/refreshLogin")
-      }
-      const result = await response.json();
-      return result;
+      const response = await fetch(url, params)
+      return response.ok
     } catch (error) {
       console.log(error);
       return null;
@@ -56,19 +51,9 @@ export default class UserService {
     const store = useStore();
     return computed(() => store.getters["user/getUser"]);
   }
-  // async showUser(id) {
-  //   try {
-  //     const response = await fetch(`${API_URL}/users/` + id);
-  //     const result = await response.json();
-  //     return result;
-  //   } catch (error) {
-  //     console.log(error);
-  //     return null;
-  //   }
-  // }
+
 
   async getUserById(id) {
-    const store = useStore();
     const token = this.getToken();
     try {
       const url = `${API_URL}/users/${id}`;
@@ -82,10 +67,9 @@ export default class UserService {
       };
       const response = await fetch(url, params);
       if(response.status===204){
-        await store.dispatch("user/refreshLogin")
+        return {ok:false}
       }
-      const result = await response.json();
-      return result;
+      return response.json();
     } catch (error) {
       return error;
     }
@@ -141,14 +125,6 @@ export default class UserService {
     return store.getters["user/getUser"];
   }
 
-
-  setToken(token, user) {
-    console.log("Setting token");
-    console.log(token);
-    console.log(user);
-    localStorage.setItem("token", token);
-    localStorage.setItem("userId", user);
-  }
 
   getToken() {
     let token = localStorage.getItem("token");

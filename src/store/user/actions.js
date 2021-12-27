@@ -22,7 +22,6 @@ export async function createUser({ commit }, userData) {
 
       return { ok: true };
     }
-
   } catch (error) {
     return { ok: false, message: "An error happened" };
   }
@@ -39,12 +38,14 @@ export async function addRatting({ commit }, ratting) {
 
 export async function updateUser({ commit }, userData) {
   try {
-    await userService.updateUser(userData);
-    commit("updateUser", userData);
-
-    return { ok: true };
+    const ok = await userService.updateUser(userData);
+    console.log(ok)
+    if(ok){
+      commit("userUpdate", userData);
+    }
+    return ok
   } catch (error) {
-    return { ok: false, message: error.message };
+    return {ok: false};
   }
 }
 
@@ -86,16 +87,14 @@ export async function checkAuthentication({ commit }) {
   console.log("User Info OK");
   try {
     const user = await userService.getUserById(userId);
+    if(!user){
+      commit("logout")
+      location.replace("/")
+    }
     commit("loginUser", { user, token });
     return { ok: true };
   } catch (error) {
-    console.log("logging out")
     commit("logout")
     return { ok: false, message: 'The server returned an error' };
   }
-}
-
-export async function refreshLogin({commit, dispatch, getters}){
-  let formData = getters["getDataToLogin"]
-  dispatch("signInUser",formData)
 }

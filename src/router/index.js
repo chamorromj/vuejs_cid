@@ -18,7 +18,7 @@ import routes from "./routes";
  * with the Router instance.
  */
 
-export default route(function (/* { store, ssrContext } */) {
+export default route(function ({ store } ) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === "history"
@@ -36,6 +36,44 @@ export default route(function (/* { store, ssrContext } */) {
       process.env.MODE === "ssr" ? void 0 : process.env.VUE_ROUTER_BASE
     ),
   });
+
+  Router.beforeEach((to, from, next) => {
+
+    const userRole = store.state.user.status
+
+    console.log(userRole)
+    if(to.meta.protected){
+      if(userRole === 'authenticated'){
+        next();
+      } else {
+        console.log("Permission denied")
+        next("/")
+      }
+    } else if(to.meta.super){
+      if(userRole === 'super-admin'){
+        next()
+      } else {
+        console.log("Permission denied")
+        next("/")
+      }
+    } else if(to.meta.admin){
+      if(userRole === 'administrator'){
+        next()
+      } else {
+        console.log("Permission denied")
+        next("/")
+      }
+    } else if(to.meta.both){
+      if(userRole === 'administrator' || userRole === 'super-admin'){
+        next()
+      } else {
+        console.log("Permission denied")
+        next("/")
+      }
+    } else {
+      next()
+    }
+  })
 
   return Router;
 });

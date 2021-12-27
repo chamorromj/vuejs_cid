@@ -89,36 +89,67 @@
         </div>
 
       </div>
-      <div class="row q-px-lg justify-center" v-if="changePassword">
-        <div class="col-12 col-md-4 ">
-          <q-input
-            class="q-mx-md q-mb-xs"
-            v-model="password1"
-            filled
-            type="password"
-            hint="Password"
-            lazy-rules
-            :rules="[
-              (val) =>
-                (val !== null && val !== '') || 'Please type your password',
-            ]"
-          />
-        </div>
-        <div class="col-12 col-md-4 ">
-          <q-input
-            class="q-mx-md q-mb-xs"
-            v-model="password2"
-            filled
-            type="password"
-            hint="Repeat Password"
-            lazy-rules
-            :rules="[
-              (val) => (val !== null && val !== '') || 'Please repeat your password',
-              isSamePassword,
-            ]"
-          />
-        </div>
-      </div>
+      <q-dialog class="row q-px-lg justify-center" v-model="changePassword">
+        <q-card style="width: 600px">
+          <q-card-section>
+            <q-btn
+              round
+              flat
+              dense
+              icon="close"
+              class="float-right"
+              color="grey-8"
+              v-close-popup
+            ></q-btn>
+            <div class="text-h6">Introduce the new password</div>
+          </q-card-section>
+          <q-separator inset></q-separator>
+          <q-card-section class="q-pt-none">
+            <q-form class="q-gutter-md">
+              <q-list>
+                <q-item>
+                  <q-item-section>
+                    <q-input
+                      class="q-mx-md q-mb-xs"
+                      v-model="password1"
+                      filled
+                      type="password"
+                      hint="Password"
+                    />
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section>
+                    <q-input
+                      class="q-mx-md q-mb-xs"
+                      v-model="password2"
+                      filled
+                      type="password"
+                      hint="Repeat Password"
+                    />
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section>
+                    <div v-if="passwordsDontMatch" class="text-red-9 text-center text-bold">The passwords don't match</div>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-form>
+          </q-card-section>
+          <q-card-section>
+            <q-card-actions align="center">
+              <q-btn
+                class="col-12 col-md-8 q-my-sm q-mx-sm"
+                label="Change password"
+                color="primary"
+                @click="saveNewPassword"
+              />
+            </q-card-actions>
+          </q-card-section>
+        </q-card
+        >
+      </q-dialog>
 
       <div>
         <q-input class="hidden" v-model="userForm.id" />
@@ -142,17 +173,17 @@
       <div class="row q-px-lg justify-center">
         <q-btn
           class="col-12 col-md-8 q-my-sm q-mx-sm"
-            icon-right="send"
-            label="Submit changes"
-            type="submit"
-            color="primary"
-          />
+          icon-right="send"
+          label="Submit changes"
+          type="submit"
+          color="primary"
+        />
 
-          <q-btn
-            label="Reset"
-            type="reset" color="secondary"
-            class="q-mx-sm col-12 col-md-8" />
-        </div>
+        <q-btn
+          label="Reset"
+          type="reset" color="secondary"
+          class="q-mx-sm col-12 col-md-8" />
+      </div>
 
     </q-form>
   </q-page>
@@ -174,16 +205,16 @@ export default defineComponent({
     const store = useStore();
     const $q = useQuasar()
     const user = computed(() => store.getters["user/getUser"]);
-    const changePassword = ref(false);
-    let password1 = ''
-    let password2 = ''
     const languages = ref([]);
-
+    const changePassword = ref(false)
+    let password1 = ref('')
+    let password2 = ref('')
+    let passwordsDontMatch = computed (() => password1.value != password2.value)
+    const userForm = ref()
 
     onBeforeMount(async ()=>{
       if (!user.value){
         user.value = userService.getUserById(route.params.id)
-        console.log(user.value)
       }
 
       const langs = await userService.getLanguages();
@@ -193,24 +224,44 @@ export default defineComponent({
         }
       }
     })
-    const userForm = ref({
-      name: user.value.name,
-      surname: user.value.surname,
-      password: user.value.password,
-      languageId: user.value.languageId,
-      address: user.value.address,
-      username: user.value.username,
-      nif: user.value.nif,
-      id: user.value.id,
-      roleId: user.value.roleId
-    });
 
+
+    const setUserData = () => {
+      userForm.value = {
+        name: user.value.name,
+        surname: user.value.surname,
+        languageId: user.value.languageId,
+        address: user.value.address,
+        username: user.value.username,
+        nif: user.value.nif,
+        id: user.value.id,
+        roleId: user.value.roleId
+      };
+    }
+
+    setUserData()
 
     const updateUser = async (user) => {
-      console.log(user)
-      const resp = await store.dispatch("user/updateUser", user);
-      return resp;
+      const ok = await store.dispatch("user/updateUser", user);
+      return ok
     };
+
+    const saveNewPassword = () => {
+      const userFormPassword = {
+        password: password1.value,
+        name: user.value.name,
+        surname: user.value.surname,
+        languageId: user.value.languageId,
+        address: user.value.address,
+        username: user.value.username,
+        nif: user.value.nif,
+        id: user.value.id,
+        roleId: user.value.roleId
+      }
+      updateUser(userFormPassword)
+      changePassword.value = false
+      $q.notify({ type: 'positive', message: 'The password has been updated correctly', color: 'blue' })
+    }
     const resetForm = () => {
       userForm.value.address.value = user.value.address;
       userForm.value.surname.value = user.value.surname;
@@ -227,17 +278,22 @@ export default defineComponent({
       resetForm,
       password1,
       password2,
+      passwordsDontMatch,
       changePassword,
+      saveNewPassword,
+      setUserData,
       updateUser,
       isPwd: ref(true),
       async onSubmit() {
-        if(password1!==''){
-          userForm.value.password = password1
+        const ok = await updateUser(userForm.value);
+        if(ok){
+          $q.notify({ type: 'positive', message: 'Your data has been updated correctly', color: 'blue' })
+          await router.push("/");
+        } else{
+          $q.notify({ type: 'warning', message: 'Email already in use!'})
+          userForm.value.username = ''
         }
-        const { ok, message } = await updateUser(userForm.value);
-        if (!ok) Swal.fire("Error", message, "error");
-        else $q.notify({ type: 'positive', message: 'Your data has been updated correctly', color: 'blue' })
-        router.push("/");
+
       },
       onReset() {
         resetForm();
@@ -247,11 +303,8 @@ export default defineComponent({
           /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
         return emailPattern.test(val) || "Please introduce a valid email";
       },
-      isSamePassword(val) {
-        return (val !== password1) || 'Passwords do not match'
-      },
       goToLogin() {
-        router.go("/login");
+        router.push("/login");
       },
     };
   },
