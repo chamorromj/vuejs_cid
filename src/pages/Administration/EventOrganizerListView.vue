@@ -7,13 +7,13 @@
     </div>
     <q-separator inset />
     <div class="row justify-center col-12 col-md-8 q-mt-sm">
-      <q-btn
-        class="col-12 col-md-8"
-        color="primary"
-        icon="add"
-        label="New Organizer"
-        to="/add-organizer"
-      />
+        <q-btn
+          class="col-12 col-md-8"
+          color="primary"
+          icon="add"
+          label="New Organizer"
+          to="/add-organizer"
+        />
     </div>
     <div class="row col-12 q-py-lg justify-center">
       <q-table

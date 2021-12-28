@@ -1,4 +1,4 @@
-import { API_URL } from "../../utils/constants";
+import { API_URL } from "src/utils/constants";
 import UserService from "../Profile/user.service";
 
 export default class LabelService {
@@ -17,8 +17,7 @@ export default class LabelService {
         body: JSON.stringify(label),
       };
       const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      return response.ok
     } catch (error) {
       console.log(error);
       return null;
@@ -40,9 +39,7 @@ export default class LabelService {
         body: JSON.stringify(label),
       };
       const response = await fetch(url, params);
-      const result = await response.json();
-
-      return result;
+      return response.ok
     } catch (error) {
       console.log(error);
       return null;
@@ -60,8 +57,7 @@ export default class LabelService {
         },
       };
       const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      return response.json();
     } catch (error) {
       console.log(error);
       return null;
@@ -79,7 +75,11 @@ export default class LabelService {
         },
       };
       const response = await fetch(url, params);
-      return response.json();
+      if(response.status === 200){
+        return response.json()
+      } else{
+        return false
+      }
     } catch (error) {
       console.log(error);
       return null;
@@ -96,12 +96,11 @@ export default class LabelService {
           Accepts: "application/json",
         },
       };
-      const response = await fetch(url, params);
-      const result = await response.json()
-      return result;
+      const response = await fetch(url, params)
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return null
     }
   }
 
@@ -119,9 +118,8 @@ export default class LabelService {
         },
         body: JSON.stringify(label),
       };
-      const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      const response = await fetch(url, params)
+      return response.json()
     } catch (error) {
       console.log(error);
       return null;

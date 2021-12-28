@@ -76,14 +76,20 @@ export default {
 
       async onSubmit() {
         const label = {
-          name: name.value,
+          name: name.value.toLowerCase(),
           description: description.value,
         };
         try {
           const labelService = new LabelService();
-          await labelService.addLabel(label);
-          $q.notify({ type: 'positive', message: ' Label has been created', color: 'blue', icon: 'thumb_up' })
-          router.push("/labels-list");
+          const ok = await labelService.addLabel(label);
+          if (ok){
+            $q.notify({ type: 'positive', message: 'Label has been created', color: 'blue', icon: 'thumb_up' })
+            await router.push("/labels-list");
+          } else{
+            $q.notify({ type: 'warning', message: 'It exists a label with this name'})
+            name.value = ''
+          }
+
         } catch (error) {
           console.log(error);
         }

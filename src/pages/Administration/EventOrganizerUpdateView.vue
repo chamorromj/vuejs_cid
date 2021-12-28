@@ -58,7 +58,7 @@ import { useStore } from "vuex";
 import {useQuasar} from "quasar";
 
 export default {
-  name: "CategoryAddView",
+  name: "CategoryUpdateView",
 
   setup() {
     const router = useRouter();
@@ -70,13 +70,17 @@ export default {
     let description = ref("");
 
     onMounted(async () => {
+      getEventOrganizerData()
+    });
+
+    const getEventOrganizerData = ()=>{
       const organizer = computed(
         () => store.getters["administration/getElement"]
       );
       organizerToUpdate.value = organizer.value;
       name.value = organizer.value.name;
       description.value = organizer.value.description;
-    });
+    }
 
     const emptyForm = () => {
       name.value = null;
@@ -88,6 +92,7 @@ export default {
       description,
       emptyForm,
       organizerToUpdate,
+      getEventOrganizerData,
       async onSubmit() {
         const organizerData = {
           name: name.value,
@@ -96,9 +101,15 @@ export default {
         };
         try {
           const eventOrganizerService = new EventOrganizerService();
-          await eventOrganizerService.updateEventOrganizer(organizerData);
-          $q.notify({ type: 'positive', message: 'The Event organizer has been updated', color: 'blue' })
-          router.push("/organizers-list");
+          const ok = await eventOrganizerService.updateEventOrganizer(organizerData);
+          if(ok){
+            $q.notify({ type: 'positive', message: 'The Event organizer has been updated', color: 'blue' })
+            router.push("/organizers-list");
+          } else{
+            $q.notify({ type: 'warning', message: 'It exists another event organizer with this name'})
+            getEventOrganizerData()
+          }
+
         } catch (error) {
           console.log(error);
         }
@@ -111,3 +122,4 @@ export default {
 };
 </script>
 
+<style lang="scss" scoped></style>

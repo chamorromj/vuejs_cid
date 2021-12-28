@@ -71,13 +71,17 @@ export default {
     let description = ref("");
 
     onMounted(async () => {
+      getCategoryData()
+    });
+
+    const getCategoryData = ()=>{
       const category = computed(
         () => store.getters["administration/getElement"]
       );
       categoryToUpdate.value = category.value;
       name.value = category.value.name;
       description.value = category.value.description;
-    });
+    }
 
     const emptyForm = () => {
       name.value = null;
@@ -89,6 +93,7 @@ export default {
       description,
       emptyForm,
       categoryToUpdate,
+      getCategoryData,
       async onSubmit() {
         const categoryData = {
           name: name.value,
@@ -97,9 +102,15 @@ export default {
         };
         try {
           const categoryService = new CategoryService();
-          await categoryService.updateCategory(categoryData);
-          $q.notify({ type: 'positive', message: 'The Category has been updated', color: 'blue' })
-          router.push("/categories-list");
+          const ok = await categoryService.updateCategory(categoryData)
+          if(ok){
+            $q.notify({ type: 'positive', message: 'The Category has been updated', color: 'blue' })
+            router.push("/categories-list");
+          } else{
+            $q.notify({ type: 'warning', message: 'It exists another category with this name'})
+            getCategoryData()
+          }
+
         } catch (error) {
           console.log(error);
         }
@@ -112,3 +123,4 @@ export default {
 };
 </script>
 
+<style lang="scss" scoped></style>

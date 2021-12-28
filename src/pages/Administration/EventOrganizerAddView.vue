@@ -77,9 +77,15 @@ export default {
         console.log(organizer);
         try {
           const eventOrganizerService = new EventOrganizerService();
-          await eventOrganizerService.addEventOrganizer(organizer);
-          $q.notify({ type: 'positive', message: 'The new Event organizer has been created', color: 'blue' })
-          router.push("/organizers-list");
+          const ok = await eventOrganizerService.addEventOrganizer(organizer);
+          if (ok){
+            $q.notify({ type: 'positive', message: 'The new Event organizer has been created', color: 'blue' })
+            router.push("/organizers-list");
+          } else {
+            $q.notify({ type: 'warning', message: 'It exists an Event organizer with this name'})
+            name.value = ''
+          }
+
         } catch (error) {
           console.log(error);
         }

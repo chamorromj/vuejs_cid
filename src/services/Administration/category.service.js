@@ -1,4 +1,4 @@
-import { API_URL } from "../../utils/constants";
+import { API_URL } from "src/utils/constants";
 import UserService from "../Profile/user.service";
 
 export default class CategoryService {
@@ -17,8 +17,7 @@ export default class CategoryService {
         body: JSON.stringify(category),
       };
       const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      return response.ok
     } catch (error) {
       console.log(error);
       return null;
@@ -91,8 +90,7 @@ export default class CategoryService {
         body: JSON.stringify(category),
       };
       const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      return response.ok
     } catch (error) {
       console.log(error);
       return null;

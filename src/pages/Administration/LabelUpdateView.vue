@@ -67,11 +67,15 @@ export default {
     const labelToUpdate = ref(null);
 
     onMounted(async () => {
+      getLabelData()
+    });
+
+    const getLabelData = ()=>{
       const label = computed(() => store.getters["administration/getElement"]);
       labelToUpdate.value = label.value;
       name.value = label.value.name;
       description.value = label.value.description;
-    });
+    }
 
     const emptyForm = () => {
       name.value = null;
@@ -83,6 +87,7 @@ export default {
       description,
       emptyForm,
       labelToUpdate,
+      getLabelData,
       async onSubmit() {
         const label = {
           name: name.value,
@@ -91,9 +96,15 @@ export default {
         };
         try {
           const labelService = new LabelService();
-          const response = await labelService.updateLabel(label);
-          $q.notify({ type: 'positive', message: 'Label has been updated', color: 'blue' })
-          router.push("/labels-list");
+          const ok = await labelService.updateLabel(label);
+          if(ok){
+            $q.notify({ type: 'positive', message: 'Label has been updated', color: 'blue' })
+            router.push("/labels-list");
+          } else{
+            $q.notify({ type: 'warning', message: 'It exists another label with this name'})
+            getLabelData()
+          }
+
         } catch (error) {
           console.log(error);
         }
