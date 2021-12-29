@@ -1,24 +1,154 @@
-import { API_URL } from "../../utils/constants";
+import { API_URL } from "src/utils/constants";
+import UserService from "../Profile/user.service";
+
+const userService = new UserService();
+const token = userService.getToken();
 
 export default class ForumService {
   async getQuestion(question) {
-    return null;
-  }
-
-  async getResponse(question) {
-    return null;
+    try {
+      const url = `${API_URL}/public/questions/${question}`;
+      const params = {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await fetch(url, params);
+      return response.json();
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 
   async addResponse(response) {
-    return null;
+    try {
+      const url = `${API_URL}/responses/response`;
+      const params = {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(response),
+      };
+      const resp = await fetch(url, params);
+      console.log(resp)
+      if(!resp.ok){
+        return false
+      } else{
+        return resp.json();
+      }
+
+
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 
   async askQuestion(question) {
-    return null;
+    try {
+      const url = `${API_URL}/public/questions/question`;
+      const params = {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(question),
+      };
+      const response = await fetch(url, params);
+      return response.json();
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 
-  async listAllQuestions(event) {
-
+  async listAllQuestions(eventId) {
+    try {
+      const url = `${API_URL}/public/questions`;
+      const params = {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await fetch(url, params);
+      const result = await response.json();
+      const questions = result.filter((element)=> element.eventId === eventId);
+      return questions;
+    } catch (error) {
+      console.log(error);
       return null;
+    }
+  }
+
+
+  async getResponse(question) {
+    try {
+      const url = `${API_URL}/public/responses/${question}`;
+      const params = {
+        method: "GET",
+        mode: "cors",
+      };
+      const response = await fetch(url, params);
+      if (response.status === 204){
+        console.log("No response")
+        return null;
+      } else{
+        return response.json()
+      }
+    } catch (error) {
+      console.log(error)
+      return null;
+    }
+  }
+
+
+  async listAllQuestionsWithoutAnswerByEvent(eventId){
+    try {
+      const eventQuestions = await this.listQuestionsByEvent(eventId);
+      if(eventQuestions && eventQuestions.length>0) {
+        let tempArray = [];
+        for await (let question of eventQuestions) {
+          let response = await this.getResponse(question.id);
+          if (!isNaN(response)){
+            tempArray.push(question)
+          }
+        }
+        return tempArray;
+      }
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async listQuestionsByEvent(eventId){
+    try {
+      const url = `${API_URL}/public/questions/event/${eventId}`;
+      const params = {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await fetch(url, params);
+      if(response.status===204){
+        return false
+      } else{
+        return response.json()
+      }
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 }
