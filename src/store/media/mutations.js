@@ -7,7 +7,7 @@ export function addComment(state, comment) {
 }
 
 export function setFavorites(state, favorites) {
-  state.favorites = favorites;
+  state.favorites = favorites
 }
 
 export function addRating(state, rating){
@@ -28,6 +28,11 @@ export function setQuestions(state, questions) {
 
 export function setResponse(state, response) {
   state.questions.filter(
-    (element) => element.id == response.questionId
-  )[0].response = response;
+    (element) => element.id === response.questionId
+  )[0].response = response
 }
+
+/*export function popQuestion(state, questionId){
+let q = state.questions.filter(element =>element.id == questionId)[0]
+  console.log(q)
+}*/
