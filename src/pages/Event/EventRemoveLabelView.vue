@@ -56,7 +56,6 @@ export default {
     const eventLabels =  computed(() => store.getters["event/getEventLabels"]);
 
     const removeLabel = async (labelId) => {
-      console.log(labelId)
       await store.dispatch("event/removeEventLabel", labelId)
     }
     return{

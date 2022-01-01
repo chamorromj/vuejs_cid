@@ -21,6 +21,7 @@ export async function addEvent({ commit }, event) {
 export async function updateEvent({ commit }, event) {
   try {
     const data = await eventProfileService.updateEvent(event);
+    console.log(data)
     const events = await eventService.listAllEvents();
     commit("setEvents", events);
     return { ok: true };
@@ -28,18 +29,6 @@ export async function updateEvent({ commit }, event) {
     return { ok: false, message: error.message };
   }
 }
-
-/*export function addResponse({ commit }, { question, message }) {
-  const response = {
-    question: question.id,
-    message: message,
-  };
-  console.log(question);
-  if (question.event) {
-    commit("addResponse", { question, response });
-  }
-  forumService.addResponse(response);
-}*/
 
 export async function addQuestion({ commit }, question) {
   try {
@@ -57,7 +46,6 @@ export async function addEventLabels({commit, getters}){
     let eventId = getters["getEventId"];
     const labelService = new LabelService()
     const labels = await labelService.getLabelsByEventId(eventId)
-    console.log(labels)
     commit("setEventLabels", labels)
 }
 

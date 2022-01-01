@@ -26,6 +26,7 @@
                   v-model.number="numberOfTickets"
                   type="number"
                   outlined
+                  @keyup.enter="buyTickets"
                   style="max-width: 200px"
                 />
               </q-item-section>
@@ -57,11 +58,9 @@
 </template>
 
 <script>
-import {computed, ref} from "vue";
-import EventDetailComponent from "components/Event/EventDetailComponent.vue";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
+import { ref } from "vue";
 import OrderService from "src/services/Event/order.service";
+import {useQuasar} from "quasar";
 export default {
   name: "EventOrderView",
   props: {
@@ -69,23 +68,42 @@ export default {
   },
   setup(props) {
     const orderService = new OrderService()
+    const $q = useQuasar()
     const userId = localStorage.getItem("userId")
     const numberOfTickets = ref(0);
 
+    const buyTickets = async ()=>{
 
+      if(numberOfTickets.value >0){
+        if(numberOfTickets.value > props.event.availableTickets){
+          let message = 'Sorry, not enough tickets remaining for this event. They are only ' + props.event.availableTickets + ' tickets available'
+          numberOfTickets.value = props.event.availableTickets
+          $q.notify({ type: 'warning', message: message })
+          return
+        }
 
-    return {
-      numberOfTickets,
-      buyTickets: async ()=>{
         let order = {
           userId: userId,
           eventId: props.event.id,
           numTickets: numberOfTickets.value,
           date: Date.now()
         }
-        console.log(order)
-        await orderService.addOrder(order)
+        const ok = await orderService.addOrder(order)
+        if(ok){
+          $q.notify({type:"positive", message: "Thanks for your order!", color: "blue"})
+        } else {
+          $q.notify({ type: 'warning', message: 'Sorry, not enough tickets remaining for this event' })
+        }
+      } else{
+        numberOfTickets.value = 0
+        $q.notify({ type: 'warning', message: 'Sorry, the number introduced is wrong' })
       }
+    }
+
+
+    return {
+      numberOfTickets,
+      buyTickets
     };
   },
 };

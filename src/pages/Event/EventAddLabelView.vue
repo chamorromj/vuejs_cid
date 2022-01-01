@@ -69,8 +69,7 @@ export default {
     const store = useStore()
     const $q = useQuasar()
     const labelsSelected = []
-    //const listOfLabels =  computed(() => store.getters["event/getEventLabels"]);
-const listOfLabels = ref()
+    const listOfLabels =  computed(() => store.getters["event/getEventLabels"]);
     const selectLabels = async () =>{
       const labelService = new LabelService()
       let allLabels = await labelService.listAllLabels();
@@ -85,37 +84,9 @@ const listOfLabels = ref()
     onMounted(async()=>{
       const labelService = new LabelService()
       listOfLabels.value = await labelService.listAllLabels()
-
-      /*for(let lab of eventLabels.value){
-        console.log(lab)
-        store.commit("event/removeLabel", lab.id)
-      }
-      listOfLabels.value = eventLabels.value*/
-
     })
 
-    const getListOfLabels = () =>{
-      console.log("Getting labels")
-    }
-
-    listOfLabels.value = getListOfLabels()
-    /*const filterFn = (val, update) =>{
-      update(() => {
-        if (val === '') {
-          filterOptions.value = listOfLabels
-        }
-        else {
-          const needle = val.toLowerCase()
-          filterOptions.value = listOfLabels.filter(
-            v => v.toLowerCase().indexOf(needle) > -1
-          )
-        }
-      })
-    }*/
-
-
     return{
-      getListOfLabels,
       listOfLabels,
       labelsSelected,
       selectLabels,

@@ -7,12 +7,12 @@
     </div>
     <q-separator inset />
     <div class="row justify-center col-12 col-md-8 q-mt-sm">
-      <q-btn color="primary" icon="add" class="col-12 col-md-8" label="New Event" to="/add-event" />
+      <q-btn color="primary" icon="add" class="col-12 col-md-10" label="New Event" to="/add-event" />
     </div>
     <div class="row col-12 q-py-lg justify-center">
       <q-table
         :pagination="initialPagination"
-        class="my-table col-12 col-md-8"
+        class="my-table col-12 col-md-10"
         title="Events"
         :rows="rows"
         :columns="columns"
@@ -150,6 +150,7 @@ import EventCategoryChangeView from "pages/Event/EventCategoryChangeView";
 import CategoryService from "src/services/Administration/category.service";
 import EventRemoveLabelView from "pages/Event/EventRemoveLabelView";
 import _ from 'lodash';
+import EventOrganizerService from "src/services/Administration/eventorganizer.service";
 
 export default defineComponent({
   name: "EventsManagement",
@@ -182,15 +183,23 @@ export default defineComponent({
     const listOfLabels = ref()
     const labelsSelected = ref(null);
     const eventLabels = ref([])
-
+    const userId = store.getters["user/getUserId"]
+    const eventsToList = []
 
     onMounted(async () => {
       loading.value = true
       const eventService = new EventService();
-      const allEvents = await eventService.listAllEvents();
-      store.commit("event/setEvents", allEvents)
+      const eventOrganizerService = new EventOrganizerService()
+      const organizers= await eventOrganizerService.getEventOrganizersByAdministrator(userId);
+      for (const organizer of organizers) {
+        const organizerEvents = await eventService.getEventsByAdministratorEventOrganizers(organizer.id);
+        organizerEvents.forEach((event)=>{
+          eventsToList.push(event)
+        })
+      }
+      store.commit("event/setEvents", eventsToList)
       const tempArray = [];
-      tempArray.value = await allEvents.forEach((element) => {
+      eventsToList.forEach((element) => {
         const event = [];
         event.id = element.id;
         event.name = element.name;
@@ -209,7 +218,7 @@ export default defineComponent({
 
 
     const formatDate = (anyDate) => {
-      return date.formatDate(anyDate, "YYYY-MM-DD HH:mm");
+      return date.formatDate(anyDate, "DD-MM-YYYY HH:mm");
     };
 
     const updateEvent = (event) => {
@@ -224,7 +233,6 @@ export default defineComponent({
       listOfLabels.value = await labelService.listAllLabels()
       eventLabels.value = await labelService.getLabelsByEventId(event.id)
       let result = _.differenceBy(listOfLabels.value, eventLabels.value, 'id');
-      console.log(result)
       listOfLabels.value = result
       await store.commit("event/setEventLabels", listOfLabels.value)
       show_addLabel.value = true

@@ -50,6 +50,7 @@ import {onMounted, ref} from "vue";
 import { useStore } from "vuex";
 import EventService from "../../services/Event/event.service";
 import { useRouter } from "vue-router";
+import EventProfileService from "src/services/Profile/eventprofile.service";
 
 export default {
   setup() {
@@ -58,17 +59,18 @@ export default {
     const router = useRouter();
     const textName = ref(null);
 
-
-
-
      const findEvents = async (text) => {
-      if (text.length) {
-        const eventService = new EventService();
-        const results = await eventService.findEventsByName(text);
-        const res = [];
-        results.forEach((element) => res.push(element));
-        searchResults.value = res;
-      }
+       if(text.length>1){
+         const eventService = new EventService();
+         const results = await eventService.findEventsByName(text);
+
+         if(results.length > 0){
+           searchResults.value = results;
+         } else{
+           searchResults.value = []
+         }
+       }
+
     };
 
     const emptyResults = () => {
@@ -76,9 +78,12 @@ export default {
       textName.value = "";
     };
 
-    const goToEvent = (idEvent) => {
-      console.log(idEvent)
-      emptyResults();
+    const goToEvent = async (idEvent) => {
+      emptyResults()
+      const eventProfileService = new EventProfileService()
+      const eventToGo = await eventProfileService.showEvent(idEvent)
+      store.commit('event/setEvent', eventToGo)
+      store.commit('ui/toggleSideMenu')
       router.push({ name: "event", params: { id: idEvent } });
     };
 
