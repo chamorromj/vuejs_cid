@@ -25,6 +25,7 @@
                     type="text"
                     v-model="message"
                     label="Response"
+                    @keyup.enter="checkResponse"
                 />
               </q-item-section>
             </q-item>
@@ -72,22 +73,36 @@ export default {
     const message = ref('')
     const route = useRoute()
 
+    const checkResponse = () => {
+      if(!message.value){
+        $q.notify({ type: 'warning', message: "You should write a message for your response! Try again", color: 'secondary' })
+      } else{
+        $q.notify({ type: 'warning', message: "Click SEND button to send your response", color: 'secondary' })
+      }
+    }
     return{
       message,
+      checkResponse,
       addResponse: async () => {
-        if(props.question.id){
-          const response = {
-            message: message.value,
-            questionId: props.question.id,
-            createdAt: Date.now(),
-          };
-          if(route.name.includes("question")){
-            await store.commit("event/popQuestion", props.question.id);
-          }
-          const ok = await store.dispatch("media/addResponse", response);
-          if(ok){
-            $q.notify({ type: 'positive', message: 'The response has been registered', color: 'blue', icon: 'thumb_up' })
-          }
+        if(message.value.trim() === ''){
+          message.value = ''
+          $q.notify({ type: 'warning', message: 'The response must have any text, it can not be empty'})
+        } else{
+          if(props.question.id){
+            const response = {
+              message: message.value,
+              questionId: props.question.id,
+              createdAt: Date.now(),
+            }
+            if(route.name.includes("Question")){
+              await store.commit("event/popQuestion", props.question.id);
+            }
+            const ok = await store.dispatch("media/addResponse", response);
+            if(ok){
+              $q.notify({ type: 'positive', message: 'The response has been registered', color: 'blue', icon: 'thumb_up' })
+            }
+        }
+
         }
 
       }

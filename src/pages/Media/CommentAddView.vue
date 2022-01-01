@@ -84,7 +84,6 @@ export default {
             comment: commentText,
             createdAt: Date.now(),
           };
-          console.log(comment)
           await mediaService.sendComment(comment);
           await store.dispatch("media/addComment", comment);
           text.value = ""

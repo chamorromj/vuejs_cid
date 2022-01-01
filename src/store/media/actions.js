@@ -76,9 +76,7 @@ export async function addComments({ commit }, eventId) {
 export async function getRate({ commit, rootGetters }, eventId) {
   const userId = localStorage.getItem("userId")
   const ratings = await mediaService.getRatingsByUserId(userId);
-  console.log(ratings)
   const rating = ratings.filter(rating => rating.eventId == eventId)[0]
-  console.log(rating)
   if(rating){
     return rating.rate
   } else{
@@ -106,8 +104,10 @@ export async function addFavorites({ commit }, favorites) {
 
 export async function addFavorite({ commit }, favorite) {
   const mediaService = new MediaService();
-  await mediaService.addToFavorites(favorite);
-  commit("addNewFavorite", favorite);
+
+  let ok = await mediaService.addToFavorites(favorite);
+  if(ok) commit("addNewFavorite", favorite);
+  return ok
 }
 
 export async function suggestEvent({ commit }, suggestion) {

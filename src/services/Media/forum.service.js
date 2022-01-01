@@ -1,8 +1,11 @@
 import { API_URL } from "src/utils/constants";
 import UserService from "../Profile/user.service";
+import {useStore} from "vuex";
+const userService = new UserService()
 
-const userService = new UserService();
-const token = userService.getToken();
+
+const store = useStore()
+
 
 export default class ForumService {
   async getQuestion(question) {
@@ -24,6 +27,8 @@ export default class ForumService {
   }
 
   async addResponse(response) {
+    const token = userService.getToken();
+
     try {
       const url = `${API_URL}/responses/response`;
       const params = {
@@ -35,8 +40,10 @@ export default class ForumService {
         },
         body: JSON.stringify(response),
       };
-      const resp = await fetch(url, params);
-      console.log(resp)
+      const resp = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       if(!resp.ok){
         return false
       } else{
@@ -45,8 +52,7 @@ export default class ForumService {
 
 
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
@@ -99,8 +105,7 @@ export default class ForumService {
       };
       const response = await fetch(url, params);
       if (response.status === 204){
-        console.log("No response")
-        return null;
+        return null
       } else{
         return response.json()
       }

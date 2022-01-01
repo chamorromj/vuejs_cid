@@ -9,14 +9,19 @@
         <template v-for="comment in comments" :key="comment.id">
           <q-item class="wrap" v-ripple>
             <q-item-section top avatar>
-              <q-avatar color="primary">
+              <q-avatar color="primary" v-if="comment.userId">
                 {{ getFirstLetter(comment.name) }}
+              </q-avatar
+              >
+              <q-avatar color="primary" v-else>
+                A
               </q-avatar
               >
             </q-item-section>
 
             <q-item-section>
-              <q-item-label>{{ comment.name }}</q-item-label>
+              <q-item-label v-if="comment.name">{{ comment.name }}</q-item-label>
+              <q-item-label v-else>Anonymous</q-item-label>
               <q-item-label caption :lines="2" class="wrap">{{ comment.comment }}</q-item-label>
             </q-item-section>
 

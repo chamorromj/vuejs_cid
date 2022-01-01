@@ -9,6 +9,7 @@
         :columns="columns"
         row-key="name"
         :loading="loading"
+        no-data-label="There are still no favorites"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -68,6 +69,7 @@ import { ref, onMounted, computed } from "vue";
 import { API_URL } from "src/utils/constants";
 import { date } from "quasar";
 import { useStore } from "vuex";
+import moment from "moment";
 
 export default {
   name: "FavoritesListView",
@@ -151,7 +153,7 @@ export default {
     };
 
     const formatDate = (anyDate) => {
-      return date.formatDate(anyDate, "YYYY-MM-DD HH:mm");
+      return date.formatDate(anyDate, "D-MM-YYYY HH:mm");
     };
 
     const goToDetail = async (idEvent) => {
