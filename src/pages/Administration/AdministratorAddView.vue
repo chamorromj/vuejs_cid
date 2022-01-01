@@ -104,9 +104,15 @@ export default {
         };
         try {
           const administratorService = new AdministratorService();
-          await administratorService.addAdministrator(administrator);
-          $q.notify({ type: 'positive', message: 'The new Administrator has been created', color: 'blue' })
-          router.push("/administrators-list");
+          const ok = await administratorService.addAdministrator(administrator)
+          if(ok){
+            $q.notify({ type: 'positive', message: 'The new Administrator has been created', color: 'blue' })
+            await router.push("/administrators-list")
+          } else {
+            $q.notify({ type: 'warning', message: 'The username is in use. Introduce another email'})
+            username.value = ''
+          }
+
         } catch (error) {
           console.log(error);
         }

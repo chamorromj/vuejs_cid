@@ -1,4 +1,4 @@
-import { API_URL } from "../../utils/constants";
+import { API_URL } from "src/utils/constants";
 import UserService from "../Profile/user.service";
 
 export default class EventOrganizerService {
@@ -16,10 +16,8 @@ export default class EventOrganizerService {
         },
         body: JSON.stringify(organizer),
       };
-      console.log(params.body);
-      const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      const response = await fetch(url, params)
+      return response.ok
     } catch (error) {
       console.log(error);
       return null;
@@ -41,8 +39,7 @@ export default class EventOrganizerService {
         body: JSON.stringify(organizer),
       };
       const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      return response.ok
     } catch (error) {
       console.log(error);
       return null;
@@ -97,6 +94,28 @@ export default class EventOrganizerService {
       const result = await response.json();
       console.log(result);
       return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async getEventOrganizersByAdministrator(idAdministrator){
+    const userService = new UserService();
+    const token = userService.getToken();
+    try {
+      const url = `${API_URL}/administration/eventorganizers/user/${idAdministrator}`;
+      const params = {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json"
+        },
+      };
+      const response = await fetch(url, params);
+      console.log(response)
+      return response.json();
     } catch (error) {
       console.log(error);
       return null;

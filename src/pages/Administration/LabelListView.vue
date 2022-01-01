@@ -5,11 +5,11 @@
         Labels Management
       </div>
     </div>
-    <q-separator inset />
-    <div class="row justify-center col-12 col-md-8 q-mt-sm">
-      <q-btn color="primary" icon="add" class="col-12 col-md-8" label="New Label" to="/add-label" />
-    </div>
-    <div class="row col-12 q-py-lg justify-center">
+      <q-separator inset />
+      <div class="row justify-center col-12 col-md-8 q-mt-sm">
+        <q-btn color="primary" icon="add" class="col-12 col-md-8" label="New Label" to="/add-label" />
+      </div>
+      <div class="row col-12 q-py-lg justify-center">
       <q-table
         :pagination="initialPagination"
         class="my-table col-12 col-md-8"
@@ -54,7 +54,7 @@
         </template>
       </q-table>
 
-    </div>
+      </div>
   </q-page>
 </template>
 

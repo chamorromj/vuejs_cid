@@ -27,7 +27,7 @@
     </div>
     <div class="row q-pa-lg justify-center">
       <div class="col-12 col-md-8">
-        <q-btn label="Assign" class="bg-primary full-width" @click="assignOrganizer()" />
+        <q-btn label="Assign" class="bg-primary full-width q-mb-sm" @click="assignOrganizer()" />
         <q-btn
           label="Cancel"
           type="button"
@@ -47,11 +47,13 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import Swal from "sweetalert2";
+import {useQuasar} from "quasar";
 export default {
   name: "AdministratorAssignationView",
 
   setup() {
     const router = useRouter();
+    const $q = useQuasar()
     const store = useStore();
     const administratorToUpdate = ref(null);
     const organizers = ref(null);
@@ -85,22 +87,16 @@ export default {
         if (organizer_selected.value){
           console.log(organizer_selected.value)
           const administratorService = new AdministratorService()
-          let {ok} = await administratorService.assignAdministratorToEventOrganizer(administratorId.value, organizer_selected.value)
+          const ok = await administratorService.assignAdministratorToEventOrganizer(administratorId.value, organizer_selected.value)
           if(ok){
-            Swal.fire(
-              "Assignation done!",
-              organizer_selected.value.label +
-              " has been assigned to " +
-              administratorName.value,
-              "success"
-            );
-            router.push("/administrators-list")
+            $q.notify({ type: 'positive', message: 'Assignation done!', color: 'blue', icon:"thumb_up" })
+            await router.push("/administrators-list")
+          } else {
+            $q.notify({ type: 'warning', message: 'The selected event organizer was previously assigned to the administrator'})
           }
-
-
+        } else{
+          $q.notify({ type: 'warning', message: 'You must select an event organizer to assign to the administrator'})
         }
-
-
       },
     };
   },

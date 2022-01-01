@@ -1,4 +1,4 @@
-import { API_URL } from "../../utils/constants";
+import { API_URL } from "src/utils/constants";
 import UserService from "../Profile/user.service";
 
 export default class AdministratorService {
@@ -17,7 +17,7 @@ export default class AdministratorService {
         body: JSON.stringify(administrator),
       };
       const response = await fetch(url, params);
-      return response.json();
+      return response.ok
     } catch (error) {
       console.log(error);
       return null;
@@ -96,8 +96,9 @@ export default class AdministratorService {
           Authorization: "Bearer " + token,
         },
       };
-      await fetch(url, params);
-      return {ok: true};
+      const response = await fetch(url, params)
+      console.log(response)
+      return response.ok
     } catch (error) {
       console.log(error);
       return null;

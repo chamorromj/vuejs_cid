@@ -45,16 +45,77 @@
         ]"
       />
 
-      <q-input
-        v-model="password"
-        filled type="password"
-        hint="Password"
-        label="Password"
-        lazy-rules
-        :rules="[
-          (val) => (val !== null && val !== '') || 'Please type the password',
-        ]"
-      />
+      <div class="col-12 col-md-4 ">
+        <q-btn
+          class="q-mx-md q-mb-xs"
+          color="primary"
+          icon-right="password"
+          label="Open to Change the Password"
+          @click="changePassword = !changePassword"
+        />
+      </div>
+
+      <q-dialog class="row q-px-lg justify-center" v-model="changePassword">
+        <q-card style="width: 600px">
+          <q-card-section>
+            <q-btn
+              round
+              flat
+              dense
+              icon="close"
+              class="float-right"
+              color="grey-8"
+              v-close-popup
+            ></q-btn>
+            <div class="text-h6">Introduce the new password</div>
+          </q-card-section>
+          <q-separator inset></q-separator>
+          <q-card-section class="q-pt-none">
+            <q-form class="q-gutter-md">
+              <q-list>
+                <q-item>
+                  <q-item-section>
+                    <q-input
+                      class="q-mx-md q-mb-xs"
+                      v-model="password1"
+                      filled
+                      type="password"
+                      hint="Password"
+                    />
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section>
+                    <q-input
+                      class="q-mx-md q-mb-xs"
+                      v-model="password2"
+                      filled
+                      type="password"
+                      hint="Repeat Password"
+                    />
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section>
+                    <div v-if="passwordsDontMatch" class="text-red-9 text-center text-bold">The passwords don't match</div>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-form>
+          </q-card-section>
+          <q-card-section>
+            <q-card-actions align="center">
+              <q-btn
+                class="col-12 col-md-8 q-my-sm q-mx-sm"
+                label="Change password"
+                color="primary"
+                @click="saveNewPassword"
+              />
+            </q-card-actions>
+          </q-card-section>
+        </q-card
+        >
+      </q-dialog>
 
       <div class="row justify-right">
         <q-btn label="Submit" type="submit" class="col-12 q-mt-sm" color="primary" />
@@ -81,27 +142,66 @@ export default {
   name: "AdministratorAddView",
 
   setup() {
-    const router = useRouter();
-    const store = useStore();
+    const router = useRouter()
+    const store = useStore()
     const $q = useQuasar()
-    const administratorToUpdate = ref(null);
-
-    const name = ref("");
-    const surname = ref("");
-    const password = ref("");
-    const username = ref("");
+    const administratorToUpdate = ref(null)
+    let password1 = ref('')
+    let password2 = ref('')
+    let passwordsDontMatch = computed (() => password1.value != password2.value)
+    const changePassword = ref(false)
+    const name = ref("")
+    const surname = ref("")
+    const password = ref("")
+    const username = ref("")
 
     onMounted(() => {
+      getAdministratorData()
+    });
+
+    const getAdministratorData = () =>{
       const administrator = computed(
         () => store.getters["administration/getElement"]
       );
       if(administrator.value == null) router.push("/administrators-list")
-      administratorToUpdate.value = administrator.value;
-      name.value = administrator.value.name;
-      surname.value = administrator.value.surname;
-      password.value = administrator.value.password;
-      username.value = administrator.value.username;
-    });
+      administratorToUpdate.value = administrator.value
+      name.value = administrator.value.name
+      surname.value = administrator.value.surname
+      password.value = administrator.value.password
+      username.value = administrator.value.username
+    }
+
+    const saveNewPassword = () => {
+      updateAdministrator()
+      changePassword.value = false
+      $q.notify({ type: 'positive', message: 'The password has been updated correctly', color: 'blue' })
+    }
+
+    const updateAdministrator = async () =>{
+        const administratorData = {
+          name: name.value,
+          surname: surname.value,
+          username: username.value,
+          password: password1.value,
+          id: administratorToUpdate.value.id,
+        };
+        try {
+          const administratorService = new AdministratorService()
+          const ok = await administratorService.updateAdministrator(administratorData)
+          return ok
+
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
+      const emptyForm = ()=>{
+        name.value = ''
+        surname.value = ''
+        password1.value = ''
+        password2.value = ''
+        username.value = ''
+      }
 
     return {
       name,
@@ -109,36 +209,27 @@ export default {
       password,
       username,
       administratorToUpdate,
+      password1,
+      password2,
+      passwordsDontMatch,
+      changePassword,
+      saveNewPassword,
+      getAdministratorData,
+      updateAdministrator,
       async onSubmit() {
-        const administratorData = {
-          name: name.value,
-          surname: surname.value,
-          username: username.value,
-          password: password.value,
-          id: administratorToUpdate.value.id,
-        };
-        try {
-          const administratorService = new AdministratorService();
-          const {ok, error} = await administratorService.updateAdministrator(administratorData);
-          if(ok){
-            $q.notify({ type: 'positive', message: 'The Administrator has been updated', color: 'blue' })
-            router.push("/administrators-list");
-          } else{
-            router.push("/administrators-list");
-            //Swal.fire("Error founded!", "Email already in use!", "warning");
-            //username.value = null;
-          }
-
-        } catch (error) {
-          console.log(error);
-        }
-      },
+        const ok = await updateAdministrator()
+        if(ok){
+          $q.notify({ type: 'positive', message: 'The Administrator has been updated', color: 'blue' })
+          await router.push("/administrators-list");
+        } else{
+          $q.notify({ type: 'warning', message: 'Email already in use!'})
+          getAdministratorData()
+        }},
       onReset() {
-        emptyForm();
+        emptyForm()
       },
     };
   },
 };
 </script>
 
-<style lang="scss" scoped></style>

@@ -77,9 +77,15 @@ export default {
         };
         try {
           const categoryService = new CategoryService();
-          await categoryService.addCategory(category);
-          $q.notify({ type: 'positive', message: 'The new Category has been created', color: 'blue' })
-          router.push("/categories-list");
+          const ok = await categoryService.addCategory(category);
+          if(ok){
+            $q.notify({ type: 'positive', message: 'The new Category has been created', color: 'blue' })
+            router.push("/categories-list");
+          } else{
+            $q.notify({ type: 'warning', message: 'It exists a category with this name'})
+            name.value = ''
+          }
+
         } catch (error) {
           console.log(error);
         }
@@ -93,3 +99,4 @@ export default {
 };
 </script>
 
+<style lang="scss" scoped></style>
