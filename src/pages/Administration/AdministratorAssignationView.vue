@@ -85,7 +85,6 @@ export default {
       option,
       assignOrganizer: async () => {
         if (organizer_selected.value){
-          console.log(organizer_selected.value)
           const administratorService = new AdministratorService()
           const ok = await administratorService.assignAdministratorToEventOrganizer(administratorId.value, organizer_selected.value)
           if(ok){

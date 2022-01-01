@@ -1,12 +1,14 @@
-import { API_URL } from "src/utils/constants";
-import UserService from "../Profile/user.service";
+import { API_URL } from "src/utils/constants"
+import UserService from "../Profile/user.service"
+const userService = new UserService()
+
 
 export default class EventOrganizerService {
   async addEventOrganizer(organizer) {
-    const userService = new UserService();
-    const token = userService.getToken();
+    const token = userService.getToken()
+
     try {
-      const url = `${API_URL}/administration/eventorganizers`;
+      const url = `${API_URL}/administration/eventorganizers`
       const params = {
         method: "POST",
         mode: "cors",
@@ -17,18 +19,20 @@ export default class EventOrganizerService {
         body: JSON.stringify(organizer),
       };
       const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
   async updateEventOrganizer(organizer) {
-    const userService = new UserService();
-    const token = userService.getToken();
+    const token = userService.getToken()
+
     try {
-      const url = `${API_URL}/administration/eventorganizers/` + organizer.id;
+      const url = `${API_URL}/administration/eventorganizers/` + organizer.id
       const params = {
         method: "PUT",
         mode: "cors",
@@ -38,73 +42,38 @@ export default class EventOrganizerService {
         },
         body: JSON.stringify(organizer),
       };
-      const response = await fetch(url, params);
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
   async listAllEventOrganizers() {
     try {
-      const url = `${API_URL}/public/administration/eventorganizers`;
+      const url = `${API_URL}/public/administration/eventorganizers`
       const params = {
         method: "GET",
         mode: "cors",
       };
-      const response = await fetch(url, params);
-      const result = await response.json();
+      const response = await fetch(url, params)
+      const result = await response.json()
       return result;
     } catch (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return null
     }
   }
 
-  async getEventOrganizerNameById(idEventOrganizer) {
-    try {
-      const url = `${API_URL}/public/administration/eventorganizer/${idEventOrganizer}`;
-      const params = {
-        method: "GET",
-        mode: "cors",
-      };
-      const response = await fetch(url, params);
-      const result = await response.json();
-      return result.name;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  }
-
-  async getEventOrganizerById(idEventOrganizer) {
-    const userService = new UserService();
-    const token = userService.getToken();
-    try {
-      const url = `${API_URL}/public/administration/eventorganizer/${idEventOrganizer}`;
-      const params = {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      };
-      const response = await fetch(url, params);
-      const result = await response.json();
-      console.log(result);
-      return result;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  }
 
   async getEventOrganizersByAdministrator(idAdministrator){
-    const userService = new UserService();
-    const token = userService.getToken();
+    const token = userService.getToken()
+
     try {
-      const url = `${API_URL}/administration/eventorganizers/user/${idAdministrator}`;
+      const url = `${API_URL}/administration/eventorganizers/user/${idAdministrator}`
       const params = {
         method: "GET",
         mode: "cors",
@@ -113,16 +82,14 @@ export default class EventOrganizerService {
           Accept: "application/json"
         },
       };
-      const response = await fetch(url, params);
-      console.log(response)
-      return response.json();
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
-  showEventOrganizer(nameOrganizer) {
-    return null;
-  }
 }

@@ -16,6 +16,7 @@
         type="text"
         v-model="name"
         label="Name"
+        @keydown.enter="onSubmit"
         lazy-rules
         :rules="[
           (val) =>
@@ -26,10 +27,10 @@
 
       <q-input
         filled
-        autogrow
         type="text"
         v-model="description"
         label="Description"
+        @keydown.enter="onSubmit"
         lazy-rules
         :rules="[
           (val) =>
@@ -71,6 +72,10 @@ export default {
       name,
       description,
       async onSubmit() {
+        if (name.value.trim() === '' || description.value.trim() === ''){
+          $q.notify({ type: 'warning', message: 'Please, fill both fields'})
+          return false
+        }
         const category = {
           name: name.value,
           description: description.value,

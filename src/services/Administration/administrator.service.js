@@ -1,12 +1,18 @@
 import { API_URL } from "src/utils/constants";
 import UserService from "../Profile/user.service";
 
+import {useStore} from "vuex";
+const userService = new UserService()
+
+
+const store = useStore()
+
 export default class AdministratorService {
   async addAdministrator(administrator) {
-    const userService = new UserService();
-    const token = userService.getToken();
+    const token = userService.getToken()
+
     try {
-      const url = `${API_URL}/administration/administrators`;
+      const url = `${API_URL}/administration/administrators`
       const params = {
         method: "POST",
         mode: "cors",
@@ -16,19 +22,21 @@ export default class AdministratorService {
         },
         body: JSON.stringify(administrator),
       };
-      const response = await fetch(url, params);
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
   async listAllAdministrators() {
-    const userService = new UserService();
-    const token = userService.getToken();
+    const token = userService.getToken()
+
     try {
-      const url = `${API_URL}/administration/administrators`;
+      const url = `${API_URL}/administration/administrators`
       const params = {
         method: "GET",
         mode: "cors",
@@ -36,21 +44,22 @@ export default class AdministratorService {
           Authorization: "Bearer " + token,
         },
       };
-      const response = await fetch(url, params);
-      return response.json();
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
   async updateAdministrator(administrator) {
-    console.log(administrator)
-    const userService = new UserService();
-    const token = userService.getToken();
+    const token = userService.getToken()
+
     try {
       const url =
-        `${API_URL}/administration/administrators/` + administrator.id;
+        `${API_URL}/administration/administrators/` + administrator.id
       const params = {
         method: "PUT",
         mode: "cors",
@@ -60,32 +69,32 @@ export default class AdministratorService {
         },
         body: JSON.stringify(administrator),
       };
-      const response = await fetch(url, params);
-      return response.ok;
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
+      return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
   async showAdministrator(administrator) {
-    const userService = new UserService();
-    const token = userService.getToken();
     try {
       const response = await fetch(
         `${API_URL}/administration/administrators/${administrator.id}`
       );
-      const result = await response.json();
-      return result[0];
+      const result = await response.json()
+      return result[0]
     } catch (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return null
     }
   }
 
   async assignAdministratorToEventOrganizer(administratorId, organizerId) {
-    const userService = new UserService();
-    const token = userService.getToken();
+    const token = userService.getToken()
+
     try {
       const url =
         `${API_URL}/administration/administrator/${administratorId}/eventorganizers/${organizerId}`
@@ -97,11 +106,13 @@ export default class AdministratorService {
         },
       };
       const response = await fetch(url, params)
-      console.log(response)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return false
     }
   }
 }
