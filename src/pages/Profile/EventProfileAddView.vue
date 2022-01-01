@@ -1,38 +1,39 @@
 <template>
-  <q-tabs
-    v-model="tab"
-    dense
-    class="bg-grey-3 q-pt-md"
-    align="justify"
-    narrow-indicator
-  >
-    <q-tab name="data" label="1" />
-    <q-tab name="others" label="2" />
-  </q-tabs>
-  <q-separator />
-  <q-tab-panels v-model="tab" animated>
-    <q-tab-panel name="data">
+    <q-tabs
+      v-model="tab"
+      dense
+      class="bg-grey-3 q-pt-md"
+      align="justify"
+      narrow-indicator
+    >
+      <q-tab name="data" label="1" />
+      <q-tab name="others" label="2" />
+    </q-tabs>
+    <q-separator />
+    <q-tab-panels v-model="tab" animated>
+      <q-tab-panel name="data">
 
-      <div class="row justify-center">
-        <div class="text-h3 q-my-md text-center">New Event <span class="text-h4">(starting...)</span></div>
-      </div>
-      <q-separator inset class="q-mb-md" color="primary"/>
-      <div class="row q-px-lg justify-center">
+    <div class="row justify-center">
+      <div class="text-h3 q-my-md text-center">New Event <span class="text-h4">(starting...)</span></div>
+    </div>
+        <q-separator inset class="q-mb-md" color="primary"/>
+        <div class="row q-px-lg justify-center">
 
-        <div class="col-12 col-md-8 text-bold">
-          Select the organizer of the event:
-          <q-select
-            filled
-            class="q-my-md"
-            v-model="formData.eventOrganizerId"
-            :options="options_organizer"
-            label="Event Organizer"
-            emit-value
-            map-options
-          />
+          <div class="col-12 col-md-8 text-bold">
+            Select the organizer of the event:
+            <q-select
+              filled
+              class="q-my-md"
+              v-model="formData.eventOrganizerId"
+              :options="options_organizer"
+              label="Event Organizer"
+              emit-value
+              map-options
+            />
 
+
+          </div>
         </div>
-      </div>
       <div class="row q-px-lg justify-center">
         <div class="col-12 col-md-8 text-bold">
           Introduce the name of the event:
@@ -65,99 +66,99 @@
           />
         </div>
       </div>
-      <div class="row q-px-lg justify-center">
-        <div class="col-12 col-md-8 ">
-          <div class="row justify-center" >
+        <div class="row q-px-lg justify-center">
+          <div class="col-12 col-md-8 ">
+            <div class="row justify-center" >
 
-            <div class="col-12 col-md-6 q-px-md q-mt-sm" style="max-width: 300px">
-              <div class="text-bold">Select the initial date:</div>
-              <div class="q-gutter-md row items-start">
-                <q-input readonly clearable v-model="formData.startDate">
-                  <template v-slot:prepend>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-date v-model="formData.startDate" mask="YYYY-MM-DD HH:mm">
-                          <div class="row items-center justify-end q-gutter-sm">
-                            <q-btn label="CLEAN" color="secondary" @click="formData.startDate=null" flat v-close-popup />
-                            <q-btn label="SET" color="primary" flat v-close-popup />
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                  <template v-slot:append>
-                    <q-icon name="access_time" class="cursor-pointer">
-                      <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-time v-model="formData.startDate" mask="YYYY-MM-DD HH:mm" format24h>
-                          <div class="row items-center justify-end q-gutter-sm">
-                            <q-btn label="CLEAN" color="secondary" @click="formData.startDate=null" flat v-close-popup />
-                            <q-btn label="SET" color="primary" flat v-close-popup />
-                          </div>
-                        </q-time>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
+              <div class="col-12 col-md-6 q-px-md q-mt-sm" style="max-width: 300px">
+                <div class="text-bold">Select the initial date:</div>
+                <div class="q-gutter-md row items-start">
+                  <q-input readonly clearable v-model="formData.startDate">
+                    <template v-slot:prepend>
+                      <q-icon name="event" class="cursor-pointer">
+                        <q-popup-proxy transition-show="scale" transition-hide="scale">
+                          <q-date v-model="formData.startDate" mask="YYYY-MM-DD HH:mm" :options="dateOptions">
+                            <div class="row items-center justify-end q-gutter-sm">
+                              <q-btn label="CLEAN" color="secondary" @click="formData.startDate=null" flat v-close-popup />
+                              <q-btn label="SET" color="primary" flat v-close-popup />
+                            </div>
+                          </q-date>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                    <template v-slot:append>
+                      <q-icon name="access_time" class="cursor-pointer">
+                        <q-popup-proxy transition-show="scale" transition-hide="scale">
+                          <q-time v-model="formData.startDate" mask="YYYY-MM-DD HH:mm" format24h>
+                            <div class="row items-center justify-end q-gutter-sm">
+                              <q-btn label="CLEAN" color="secondary" @click="formData.startDate=null" flat v-close-popup />
+                              <q-btn label="SET" color="primary" flat v-close-popup />
+                            </div>
+                          </q-time>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6 q-px-md q-mt-sm" style="max-width: 300px">
+                <div class="text-bold">Select the end date:</div>
+                <div class="q-gutter-md row items-start">
+                  <q-input readonly clearable v-model="formData.endDate">
+                    <template v-slot:prepend>
+                      <q-icon name="event" class="cursor-pointer">
+                        <q-popup-proxy transition-show="scale" transition-hide="scale">
+                          <q-date v-model="formData.endDate" mask="YYYY-MM-DD HH:mm" :options="dateOptions">
+                            <div class="row items-center justify-end q-gutter-sm">
+                              <q-btn label="CLEAN" color="secondary" @click="formData.endDate=null" flat v-close-popup />
+                              <q-btn label="SET" color="primary" flat v-close-popup />
+                            </div>
+                          </q-date>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                    <template v-slot:append>
+                      <q-icon name="access_time" class="cursor-pointer">
+                        <q-popup-proxy transition-show="scale" transition-hide="scale">
+                          <q-time v-model="formData.endDate" mask="YYYY-MM-DD HH:mm" format24h >
+                            <div class="row items-center justify-end q-gutter-sm">
+                              <q-btn label="CLEAN" color="secondary" @click="formData.endDate=null" flat v-close-popup />
+                              <q-btn label="SET" color="primary" flat v-close-popup />
+                            </div>
+                          </q-time>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                </div>
               </div>
             </div>
 
-            <div class="col-12 col-md-6 q-px-md q-mt-sm" style="max-width: 300px">
-              <div class="text-bold">Select the end date:</div>
-              <div class="q-gutter-md row items-start">
-                <q-input readonly clearable v-model="formData.endDate">
-                  <template v-slot:prepend>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-date v-model="formData.endDate" mask="YYYY-MM-DD HH:mm" >
-                          <div class="row items-center justify-end q-gutter-sm">
-                            <q-btn label="CLEAN" color="secondary" @click="formData.endDate=null" flat v-close-popup />
-                            <q-btn label="SET" color="primary" flat v-close-popup />
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                  <template v-slot:append>
-                    <q-icon name="access_time" class="cursor-pointer">
-                      <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-time v-model="formData.endDate" mask="YYYY-MM-DD HH:mm" format24h >
-                          <div class="row items-center justify-end q-gutter-sm">
-                            <q-btn label="CLEAN" color="secondary" @click="formData.endDate=null" flat v-close-popup />
-                            <q-btn label="SET" color="primary" flat v-close-popup />
-                          </div>
-                        </q-time>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
+            <div class="row q-py-md justify-center">
+              <div class="col-12 col-md-8 text-bold text-center"
+                   style="max-width:200px">
+            Select the initial number of tickets available:
+            <q-input
+              v-model.number="formData.availableTickets"
+              type="number"
+            />
+          </div>
               </div>
-            </div>
           </div>
-
-          <div class="row q-py-md justify-center">
-            <div class="col-12 col-md-8 text-bold text-center"
-                 style="max-width:200px">
-              Select the initial number of tickets available:
-              <q-input
-                v-model.number="formData.availableTickets"
-                type="number"
-              />
-            </div>
+          <div class="col-12 col-md-8 ">
+            <q-btn class="full-width q-mt-md" color="gray-2" text-color="primary" label="Continue" @click="tab='others'"/>
+            <q-btn class="full-width q-mt-md" label="Cancel" type="button" color="secondary" to="/events-list"/>
           </div>
         </div>
-        <div class="col-12 col-md-8 ">
-          <q-btn class="full-width q-mt-md" color="gray-2" text-color="primary" label="Continue" @click="tab='others'"/>
-          <q-btn class="full-width q-mt-md" label="Cancel" type="button" color="secondary" to="/events-list"/>
+      </q-tab-panel>
+      <q-tab-panel name="others">
+        <div class="row justify-center">
+          <div class="text-h3 q-my-md text-center">New Event <span class="text-h4">(concluding...)</span></div>
         </div>
-      </div>
-    </q-tab-panel>
-    <q-tab-panel name="others">
-      <div class="row justify-center">
-        <div class="text-h3 q-my-md text-center">New Event <span class="text-h4">(concluding...)</span></div>
-      </div>
-      <q-separator inset class="q-mb-md" color="primary"/>
-      <div class="row q-px-lg justify-center">
-        <div class="col-12 col-md-8 text-bold">
+        <q-separator inset class="q-mb-md" color="primary"/>
+        <div class="row q-px-lg justify-center">
+          <div class="col-12 col-md-8 text-bold">
           Please, specify the location of the event:
           <q-input
             class="q-mt-md"
@@ -209,8 +210,8 @@
       </div>
 
 
-      <div class="row q-px-lg justify-center">
-        <div class="col-12 col-md-8">
+        <div class="row q-px-lg justify-center">
+          <div class="col-12 col-md-8">
           <q-btn
             icon-right="send"
             label="Add the event"
@@ -219,9 +220,9 @@
             class="full-width q-mt-md"
           />
         </div>
-      </div>
-      <div class="row q-px-lg justify-center">
-        <div class="col-12 col-md-8">
+        </div>
+        <div class="row q-px-lg justify-center">
+          <div class="col-12 col-md-8">
           <q-btn
             label="Reset"
             @click="reset"
@@ -229,31 +230,34 @@
             class="full-width q-mt-md"
           />
         </div>
-      </div>
-      <div class="row q-px-lg justify-center">
-        <div class="col-12 col-md-8">
-          <q-btn
-            label="Back"
-            @click="tab='data'"
-            color="gray-3"
-            text-color="primary"
-            class="full-width q-mt-md"
-          />
         </div>
-      </div>
-    </q-tab-panel>
-  </q-tab-panels>
+        <div class="row q-px-lg justify-center">
+          <div class="col-12 col-md-8">
+            <q-btn
+              label="Back"
+              @click="tab='data'"
+              color="gray-3"
+              text-color="primary"
+              class="full-width q-mt-md"
+            />
+          </div>
+        </div>
+      </q-tab-panel>
+    </q-tab-panels>
+
+  <q-input class="hidden" v-model="endDateEmpty" />
 </template>
 
 <script>
 import { date, useQuasar } from "quasar";
 import EventProfileService from "../../services/Profile/eventprofile.service.js";
-import { defineComponent, ref, onMounted } from "vue";
+import {defineComponent, ref, onMounted, computed} from "vue";
 import { useRouter } from "vue-router";
 import CategoryService from "../../services/Administration/category.service";
 import EventOrganizerService from "src/services/Administration/eventorganizer.service";
 import Swal from "sweetalert2";
 import { useStore } from "vuex";
+import moment from "moment"
 
 export default defineComponent({
   name: "NewEventForm",
@@ -261,7 +265,7 @@ export default defineComponent({
   setup() {
     const router = useRouter()
     const $q = useQuasar()
-    const formData = ref({})
+    const formData = ref({ endDate: null})
     const store = useStore()
 
     let categories = null
@@ -271,6 +275,7 @@ export default defineComponent({
     let option = ref(null)
     let file = ''
     let picture = ref(null)
+    let endDateEmpty = ref(true)
     let tab= ref("data")
     const userId = store.getters["user/getUserId"]
 
@@ -304,6 +309,10 @@ export default defineComponent({
       }
     };
 
+    const formatToShow = (anyDate) =>{
+      return date.formatDate(anyDate, 'DD-MM-YYYY HH:mm')
+    }
+
     const formatDateForDataBase = (anyDate) =>{
       return date.formatDate(anyDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
     }
@@ -317,13 +326,16 @@ export default defineComponent({
     }
 
     const isValidUrl = (text) =>{
-      const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-      return pattern.test(text);
+      const pattern = new RegExp("((http|https)://)?(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)")
+      return pattern.test(text)
+    }
+
+    const compareDates = ()=>{
+      if(endDateEmpty.value){
+        return true
+      } else{
+        return moment(formData.value.endDate).isSameOrAfter(formData.value.startDate)
+      }
     }
 
     const submitFile = async (id)=>{
@@ -332,6 +344,9 @@ export default defineComponent({
     }
 
     const submit = async() =>{
+      if(formData.value.endDate !== null && formData.value.endDate){
+        endDateEmpty.value = false
+      }
       formData.value.startDate =  formatDateForDataBase(formData.value.startDate);
       formData.value.endDate =  formatDateForDataBase(formData.value.endDate);
       formData.value.avgRate = 0
@@ -345,8 +360,12 @@ export default defineComponent({
       } else if(!formData.value.description){
         $q.notify({ type: 'warning', message: 'You must write a description for the event' })
         tab.value='data'
-      } else if(!formData.value.startDate){
-        $q.notify({ type: 'warning', message: 'You must inform the start date' })
+      } else if(!formData.value.startDate) {
+        $q.notify({type: 'warning', message: 'You must select the start date'})
+        tab.value = 'data'
+      } else if(!compareDates()){
+        $q.notify({ type: 'warning', message: "The event can not end before starting" })
+        formData.value.endDate = null
         tab.value='data'
       } else if(formData.value.availableTickets <= 0){
         $q.notify({ type: 'warning', message: "Number of available tickets can't be negative or zero" })
@@ -355,13 +374,12 @@ export default defineComponent({
       } else if(!formData.value.url){
         $q.notify({ type: 'warning', message: 'You must include the url for the event' })
       } else if(!isValidUrl(formData.value.url)){
-        $q.notify({ type: 'warning', message: 'The url is not valid' })
+      $q.notify({ type: 'warning', message: 'The url is not valid' })
       } else if(!picture.value){
         $q.notify({ type: 'warning', message: 'You must upload a picture' })
       } else if(!formData.value.categoryId) {
         $q.notify({type: 'warning', message: 'You must select a category'})
       } else {
-        console.log(formData.value)
         try {
           const eventProfileService = new EventProfileService();
           let eventResult = await eventProfileService.addEvent(formData.value);
@@ -379,6 +397,13 @@ export default defineComponent({
 
 
     return {
+      dateOptions: (anyDate) => {
+        let today = date.formatDate(Date.now(), 'YYYY-MM-DD')
+        return moment(anyDate).isSameOrAfter(today)
+      },
+      formatToShow,
+      compareDates,
+      endDateEmpty,
       submitFile,
       picture,
       file,

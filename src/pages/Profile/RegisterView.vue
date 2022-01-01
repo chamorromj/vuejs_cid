@@ -119,11 +119,40 @@
         </div>
       </div>
       <div class="row justify-center col-12 col-md-8">
-          <q-toggle
+          <q-checkbox
             v-model="accept"
-            label="I accept the license and terms"
-          />
+          /><div class="cursor-pointer q-pt-sm text-grey text-subtitle2" >I accept the <span @click="show_terms=true" class="text-primary text-bold">Terms and Conditions</span>
       </div>
+      </div>
+      <q-dialog v-model="show_terms">
+        <q-card style="width: 600px">
+          <q-card-section>
+            <q-btn
+              round
+              flat
+              dense
+              icon="close"
+              class="float-right"
+              color="grey-8"
+              v-close-popup
+            ></q-btn>
+            <div class="text-h6">Terms and Conditions</div>
+          </q-card-section>
+          <q-separator inset/>
+          <q-card-section class="q-mt-sm">
+            This webapp has the standard terms and conditions. For education purposes only.
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn
+              flat
+              label="CLOSE"
+              color="primary"
+              dense
+              v-close-popup
+            ></q-btn>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
       <div class="row q-px-lg justify-center">
 <!--        <div class="col-12 col-md-8 q-pl-lg q-mt-md">-->
 
@@ -250,6 +279,7 @@ export default defineComponent({
       onReset: () => {
         emptyForm();
       },
+      show_terms: ref(false)
     };
   },
 });

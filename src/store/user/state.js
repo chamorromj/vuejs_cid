@@ -1,6 +1,6 @@
 export default function () {
   return {
-    status: "authenticating", //authenticated, administrator, super-admin
+    status: "not-authenticated", //authenticated, administrator, super-admin
     user: null,
     token: null,
   };

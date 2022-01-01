@@ -17,6 +17,7 @@
           type="password"
           v-model="userForm.password"
           label="Your password *"
+          @keydown.enter="onSubmit"
           lazy-rules
           :rules="[
             (val) =>
@@ -38,6 +39,7 @@
             cursor-pointer
           "
         @click="goToRegister"
+        @keydown.enter="goToRegister"
       >
         Not registered yet? Register now
       </div>
@@ -63,8 +65,7 @@ export default defineComponent({
     });
 
    const loginUser = async (user) => {
-      const resp = await store.dispatch("user/signInUser", user);
-      return resp;
+      return await store.dispatch("user/signInUser", user)
     };
 
     return {
@@ -72,8 +73,10 @@ export default defineComponent({
       loginUser,
       goToRegister: () => router.push("/register"),
       onSubmit: async () => {
-        const { ok, message } = await loginUser(userForm.value);
-        if (!ok) $q.notify({ type: 'warning', message: 'Something went wrong during the login' })
+        const ok = await loginUser(userForm.value)
+        if (!ok){
+          $q.notify({ type: 'warning', message: 'You have entered an invalid username or password' })
+        }
         else {
           $q.notify({ type: 'positive', message: 'You are logged in the system', color: 'blue' })
           await router.push("/");

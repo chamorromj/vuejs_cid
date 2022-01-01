@@ -15,8 +15,8 @@ export async function createUser({ commit }, userData) {
       const userToLogin = {
         username: userData.username,
         password: userData.password,
-      };
-      const { token } = await userService.login(userToLogin);
+      }
+      const { token } = await userService.login(userToLogin)
       delete user.password;
       commit("loginUser", { user, token });
 
@@ -28,7 +28,8 @@ export async function createUser({ commit }, userData) {
 }
 
 export async function addFavorite({ commit }, favorite) {
-  commit("addFavorite", favorite);
+  commit("addFav", favorite);
+  return {ok:true}
 }
 
 export async function addRatting({ commit }, ratting) {
@@ -38,25 +39,29 @@ export async function addRatting({ commit }, ratting) {
 
 export async function updateUser({ commit }, userData) {
   try {
-    const ok = await userService.updateUser(userData);
-    console.log(ok)
+    const ok = await userService.updateUser(userData)
     if(ok){
-      commit("userUpdate", userData);
+      commit("userUpdate", userData)
     }
     return ok
   } catch (error) {
-    return {ok: false};
+    return {ok: false}
   }
 }
 
 export async function signInUser({ commit }, userData) {
   try {
-    const { token, userId } = await userService.login(userData);
+    const data = await userService.login(userData)
+    if (!data.userId){
+      return false
+    }
 
-    localStorage.setItem("token", token);
-    localStorage.setItem("userId", userId);
+    const token = data.token
+    const userId = data.userId
+    localStorage.setItem("token", token)
+    localStorage.setItem("userId", userId)
 
-    const user = await userService.getUserById(userId);
+    const user = await userService.getUserById(userId)
 
     commit("loginUser", {user, token});
 
@@ -66,12 +71,12 @@ export async function signInUser({ commit }, userData) {
   }
 }
 
+
 export async function checkAuthentication({ commit }) {
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
 
   if ((!token) || (!userId) || isNaN(parseInt(userId))) {
-    console.log("No valid user information");
     commit("logout");
     return { ok: false, message: "No valid user information" };
   }
@@ -84,7 +89,6 @@ export async function checkAuthentication({ commit }) {
     commit("logout")
     location.reload()
   }
-  console.log("User Info OK");
   try {
     const user = await userService.getUserById(userId);
     if(!user){
@@ -98,3 +102,6 @@ export async function checkAuthentication({ commit }) {
     return { ok: false, message: 'The server returned an error' };
   }
 }
+
+
+

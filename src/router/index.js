@@ -6,6 +6,8 @@ import {
   createWebHashHistory,
 } from "vue-router";
 import routes from "./routes";
+import {date, Notify} from "quasar";
+import jwtDecode from "jwt-decode";
 
 // import profileRouter from "../modules/profile/router/index";
 
@@ -37,43 +39,50 @@ export default route(function ({ store } ) {
     ),
   });
 
-  Router.beforeEach((to, from, next) => {
+Router.beforeEach((to, from, next) => {
 
-    const userRole = store.state.user.status
 
-    console.log(userRole)
-    if(to.meta.protected){
-      if(userRole === 'authenticated'){
-        next();
-      } else {
-        console.log("Permission denied")
-        next("/")
-      }
-    } else if(to.meta.super){
-      if(userRole === 'super-admin'){
-        next()
-      } else {
-        console.log("Permission denied")
-        next("/")
-      }
-    } else if(to.meta.admin){
-      if(userRole === 'administrator'){
-        next()
-      } else {
-        console.log("Permission denied")
-        next("/")
-      }
-    } else if(to.meta.both){
-      if(userRole === 'administrator' || userRole === 'super-admin'){
-        next()
-      } else {
-        console.log("Permission denied")
-        next("/")
-      }
-    } else {
-      next()
-    }
-  })
+   const userRole = store.state.user.status
 
+   switch (userRole) {
+     case 'not-authenticated':
+       if (to.meta.public) {
+         next()
+         break
+       } else {
+         console.log("Permission denied")
+         next("/")
+         break
+       }
+     case 'authenticated':
+       if (to.meta.protected || to.meta.public) {
+         next()
+         return
+       } else {
+         console.log("Permission denied")
+         next("/")
+         break
+       }
+     case 'super-admin':
+       if (to.meta.protected || to.meta.public || to.meta.super || to.meta.both) {
+         next()
+         break
+       } else {
+         console.log("Permission denied")
+         next("/")
+         break
+       }
+     case 'administrator':
+       if (to.meta.protected || to.meta.public || to.meta.admin || to.meta.both) {
+         next()
+         break
+       } else {
+         console.log("Permission denied")
+         next("/")
+         break
+       }
+   }
+ })
   return Router;
-});
+
+})
