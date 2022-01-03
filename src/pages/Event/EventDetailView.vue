@@ -54,8 +54,8 @@
               <div class="text-subtitle2">{{ event.description }}</div>
               <q-separator class="q-my-md" />
 
-              <div v-if="event.organizerName" class="text-h6 text-blue-9">
-                Organized by: {{ event.organizerName }}
+              <div v-if="event.eventOrganizerName" class="text-h6 text-blue-9">
+                Organized by: {{ event.eventOrganizerName }}
               </div>
               <div class="q-mt-md q-pa-sm" style="border: solid 1px black">
                 <div class="text-subtitle1">
@@ -77,18 +77,27 @@
 
             <div class="gt-sm-col-6">
 
-              <q-img style="width: 100%;height: auto"
+              <q-img style="width: 450px;height: auto"
                      :src= "`data:image/png;base64,${event.img}`" :alt="event.name" />
               <div class="row q-pt-sm justify-between">
                 <q-btn class="col-12 q-mt-sm" icon="home" label="HOME" color="primary" to="/" />
+
                 <q-btn class="col-12 q-mt-sm"
-                       if="user"
-                       icon="shopping_cart"
-                       label="BOOK"
-                       color="primary"
-                       @click="show_order=true"
+                  v-if="user && arethereReaminingTickets"
+                  color="primary"
+                  icon="shopping_cart"
+                  label="Book"
+                  @click="show_order=true"
                 />
                 <q-btn class="col-12 q-mt-sm"
+                  v-else-if="user && !arethereReaminingTickets"
+                  color="deep-orange-10"
+                  icon="shopping_cart"
+                  disable
+                  label="SOLD OUT"
+                />
+                <q-btn class="col-12 q-mt-sm"
+                       v-if="user"
                        icon="send"
                        label="SUGGEST"
                        color="primary"
@@ -101,17 +110,9 @@
                        color="secondary">
                   <q-tooltip>This event is on your list of favorites</q-tooltip>
                 </q-btn>
+
                 <q-btn class="col-12 q-mt-sm"
-                       v-else-if="!user"
-                       color="primary"
-                       icon="favorite"
-                       label="FAVORITE"
-                       @click="callToRegister"
-                >
-                  <q-tooltip> Add to your favorites </q-tooltip>
-                </q-btn>
-                <q-btn class="col-12 q-mt-sm"
-                       v-else
+                       v-else-if="user"
                        icon="favorite"
                        label="FAVORITE"
                        color="primary"
@@ -175,13 +176,14 @@ import EventService from "src/services/Event/event.service";
 import {useRoute, useRouter} from "vue-router";
 import Swal from "sweetalert2";
 import EventProfileService from "src/services/Profile/eventprofile.service";
-import {date, useQuasar} from "quasar";
+import {date, QSpinnerGears, useQuasar} from "quasar";
 import LabelService from "src/services/Administration/label.service";
 import CommentListView from "pages/Media/CommentListView";
 import CommentAddView from "pages/Media/CommentAddView";
 import RatingView from "components/Media/RatingView";
 import EventOrderView from "components/Event/EventOrderView";
 import SuggestEventView from "components/Event/SuggestEventView";
+import {isStandardUser} from "src/store/user/getters";
 
 export default {
   name: "Event",
@@ -196,49 +198,62 @@ export default {
 
   watch: {
     $route(to, from) {
-      if (to !== from ) {
-        location.reload();
+      if(to.name){
+        console.log(to.name)
+      } else {
+        if(to.name && to.name.includes("event")){
+          this.getEvent(to.params.id)
+        } else {
+          console.log(to.name)
+        }
       }
     },
   },
   setup() {
-    const eventprofileService = new EventProfileService();
-    const mediaService = new MediaService();
-    const eventService = new EventService();
-    const labelService = new LabelService();
-    const formCommentOpen = ref(false);
-    const store = useStore();
+    const eventprofileService = new EventProfileService()
+    const mediaService = new MediaService()
+    const eventService = new EventService()
+    const labelService = new LabelService()
+    const formCommentOpen = ref(false)
+    const store = useStore()
     const $q = useQuasar()
 
-    const show_commentForm = ref(false);
-    const route = useRoute();
-    const router = useRouter();
-    const event = computed(() => store.getters["event/getEvent"]);
-    const user = computed(() => store.getters["user/getUser"]);
-    const show_suggest = ref(false);
+    const show_commentForm = ref(false)
+    const route = useRoute()
+    const router = useRouter()
+    const event = computed(() => store.getters["event/getEvent"])
+    const user = computed(() => store.getters["user/getUser"])
+    const show_suggest = ref(false)
     const show_order = ref(false)
-    const comments = computed(() => store.getters["media/getComments"]);
-    const favorites = computed(()=>store.getters["media/getFavorites"]);
+    const comments = computed(() => store.getters["media/getComments"])
+    const favorites = computed(()=>store.getters["media/getFavorites"])
     const labels = ref([]);
 
-    onBeforeMount(async () => {
-      loadPage();
-    });
+
 
     onMounted(async () => {
-      let userId = (!user.value) ? localStorage.getItem("userId") : user.value.id;
+      let userId = (!user.value) ? localStorage.getItem("userId") : user.value.id
       if(userId){
-        let favs = await mediaService.listAllFavoritesByUser(userId);
-        await store.dispatch("media/addFavorites", favs);
+        let favs = await mediaService.listAllFavoritesByUser(userId)
+        await store.dispatch("media/addFavorites", favs)
       }
     });
 
-    const loadPage = async () => {
-      event.value = await eventprofileService.showEvent(route.params.id);
-      await store.dispatch("media/addComments", route.params.id);
-      await store.dispatch("media/addQuestions", route.params.id);
-      labels.value = await labelService.getLabelsByEventId(route.params.id);
-    };
+    const getEvent = async (eventId) => {
+          $q.loading.show({
+            spinner: QSpinnerGears,
+            spinnerColor: 'primary',
+            messageColor: 'secondary',
+            backgroundColor: 'gray',
+            message: 'Loading the event...'
+          })
+          event.value = await eventprofileService.showEvent(eventId)
+          await store.dispatch("media/addComments", eventId)
+          await store.dispatch("media/addQuestions", eventId)
+          labels.value = await labelService.getLabelsByEventId(eventId)
+
+          $q.loading.hide()
+        }
 
     const getFirstLetter = (name) => {
       return name.slice(0, 1);
@@ -282,8 +297,7 @@ export default {
     };
     return {
       filterByLabel: (id, name) => {
-        console.log("Filtering by... " + id);
-        store.commit("label/setLabel", { id, name });
+        store.commit("administration/changeElement", name);
         router.push({ name: "labels", params: { id: id } });
       },
       getFirstLetter,
@@ -293,7 +307,9 @@ export default {
       show_suggest,
       show_order,
       isOnUserFavorites,
-      loadPage,
+      isStandardUser: store.getters["user/isStandardUser"],
+      arethereReaminingTickets: store.getters["event/arethereReaminingTickets"],
+      getEvent,
       user,
       event,
       labels,

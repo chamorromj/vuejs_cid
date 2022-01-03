@@ -46,10 +46,9 @@
 import EventService from "src/services/Event/event.service";
 import ForumService from "src/services/Media/forum.service";
 import QuestionDetailView from "../../components/Media/QuestionDetailView.vue";
-import { ref, onMounted, computed } from "vue";
+import { ref, computed } from "vue";
 import { useStore } from "vuex";
-import { findIndex } from "lodash";
-import {setEventsWithQuestions} from "src/store/event/actions";
+import {QSpinnerGears, useQuasar} from "quasar";
 
 export default {
   name: "AnswerQuestionView",
@@ -60,16 +59,23 @@ export default {
   setup() {
     const eventService = new EventService();
     const forumService = new ForumService();
+    const $q = useQuasar()
     const events = ref(null);
     const store = useStore();
     const listEvents = computed(() => store.getters["event/getEvents"]);
 
 
     const createEventsArrayWithItsQuestionsWithoutAnswer = async () => {
+      $q.loading.show({
+        spinner: QSpinnerGears,
+        spinnerColor: 'primary',
+        messageColor: 'secondary',
+        backgroundColor: 'gray',
+        message: 'Loading questions...'
+      })
       store.commit("event/setEvents", [])
 
-      const events = await eventService.listAllEvents();
-      listEvents.value = events;
+      const events = await eventService.listAllEvents()
       for (let actualEvent of events) {
         let questionsWithoutAnswer = await forumService.listAllQuestionsWithoutAnswerByEvent(actualEvent.id);
         if (questionsWithoutAnswer && questionsWithoutAnswer.length >0){
@@ -77,6 +83,7 @@ export default {
           await store.commit("event/addEvent", actualEvent)
         }
       }
+      $q.loading.hide()
     };
 
     createEventsArrayWithItsQuestionsWithoutAnswer();

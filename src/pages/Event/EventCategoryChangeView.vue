@@ -78,7 +78,6 @@ export default {
 
     const recoverActualCategory = () =>{
       let name = store.getters["event/getEventCategoryName"]
-      console.log(name)
       return name
     }
 

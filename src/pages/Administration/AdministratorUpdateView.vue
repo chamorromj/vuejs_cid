@@ -16,6 +16,7 @@
         type="text"
         v-model="name"
         label="Name"
+        @keydown.enter="onSubmit"
         lazy-rules
         :rules="[
           (val) => (val !== null && val !== '') || 'Please type the name',
@@ -28,6 +29,7 @@
         type="text"
         v-model="surname"
         label="Surname"
+        @keydown.enter="onSubmit"
         lazy-rules
         :rules="[
           (val) => (val !== null && val !== '') || 'Please type the surname',
@@ -40,6 +42,7 @@
         v-model="username"
         label="Email"
         lazy-rules
+        @keydown.enter="onSubmit"
         :rules="[
           (val) => (val !== null && val !== '') || 'Please type the email',
         ]"

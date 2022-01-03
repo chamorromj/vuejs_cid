@@ -70,16 +70,7 @@ export default defineComponent({
     onMounted(async () => {
       const eventOrganizerService = new EventOrganizerService();
       const response = await eventOrganizerService.listAllEventOrganizers();
-      // const tempArray = [];
-      // tempArray.value = await response.forEach((element) => {
-      //   const organizer = [];
-      //   organizer.id = element.id;
-      //   organizer.name = element.name;
-      //   organizer.description = element.description;
-      //   tempArray.push(organizer);
-      // });
       rows.value = response;
-      console.log(response);
     });
 
     const updateOrganizer = (organizer) => {

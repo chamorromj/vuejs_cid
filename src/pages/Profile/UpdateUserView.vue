@@ -4,7 +4,7 @@
       <div class="text-h2 q-my-lg text-center">Update User Data</div>
     </div>
     <q-separator inset color="blue" />
-    <q-form @submit="onSubmit" class="q-gutter-md q-mt-lg">
+    <q-form @submit="onSubmit" class="q-gutter-md q-mt-lg" @keydown.enter="onSubmit">
       <div class="row q-px-lg justify-center">
         <div class="col-12 col-md-4 ">
           <q-input
@@ -173,17 +173,17 @@
       <div class="row q-px-lg justify-center">
         <q-btn
           class="col-12 col-md-8 q-my-sm q-mx-sm"
-          icon-right="send"
-          label="Submit changes"
-          type="submit"
-          color="primary"
-        />
+            icon-right="send"
+            label="Submit changes"
+            type="submit"
+            color="primary"
+          />
 
-        <q-btn
-          label="Reset"
-          type="reset" color="secondary"
-          class="q-mx-sm col-12 col-md-8" />
-      </div>
+          <q-btn
+            label="Reset"
+            type="reset" color="secondary"
+            class="q-mx-sm col-12 col-md-8" />
+        </div>
 
     </q-form>
   </q-page>
@@ -211,11 +211,14 @@ export default defineComponent({
     let password2 = ref('')
     let passwordsDontMatch = computed (() => password1.value != password2.value)
     const userForm = ref()
+    const usernameOriginal = ref('')
 
     onBeforeMount(async ()=>{
       if (!user.value){
         user.value = userService.getUserById(route.params.id)
       }
+
+      usernameOriginal.value = user.value.username
 
       const langs = await userService.getLanguages();
       if(langs){
@@ -242,25 +245,37 @@ export default defineComponent({
     setUserData()
 
     const updateUser = async (user) => {
-      const ok = await store.dispatch("user/updateUser", user);
-      return ok
+      if(userForm.value.nif.length>9){
+        $q.notify({ type: 'warning', message: 'The length of the field NIF is too large. The maximum is 9 characters'})
+        return false
+      } else if(userForm.value.username !== usernameOriginal.value) {
+        $q.notify({ type: 'warning', message: 'Sorry, changing username is not allowed. Contact the administrator'})
+        userForm.value.username = usernameOriginal.value
+        return false
+      }
+      else {
+        const ok = await store.dispatch("user/updateUser", user);
+        return ok
+      }
+
     };
 
     const saveNewPassword = () => {
-      const userFormPassword = {
-        password: password1.value,
-        name: user.value.name,
-        surname: user.value.surname,
-        languageId: user.value.languageId,
-        address: user.value.address,
-        username: user.value.username,
-        nif: user.value.nif,
-        id: user.value.id,
-        roleId: user.value.roleId
-      }
-      updateUser(userFormPassword)
-      changePassword.value = false
-      $q.notify({ type: 'positive', message: 'The password has been updated correctly', color: 'blue' })
+        const userFormPassword = {
+          password: password1.value,
+          name: user.value.name,
+          surname: user.value.surname,
+          languageId: user.value.languageId,
+          address: user.value.address,
+          username: user.value.username,
+          nif: user.value.nif,
+          id: user.value.id,
+          roleId: user.value.roleId
+        }
+        updateUser(userFormPassword)
+        changePassword.value = false
+
+        $q.notify({ type: 'positive', message: 'The password has been updated correctly', color: 'blue' })
     }
     const resetForm = () => {
       userForm.value.address.value = user.value.address;
@@ -269,7 +284,7 @@ export default defineComponent({
       userForm.value.nif.value = user.value.nif;
       userForm.value.username.value = user.value.username;
       userForm.value.name.value = user.value.name;
-      // userForm.value.password.value = user.value.password;
+      userForm.value.password.value = user.value.password;
     };
     return {
       user,
@@ -280,18 +295,19 @@ export default defineComponent({
       password2,
       passwordsDontMatch,
       changePassword,
+      usernameOriginal,
       saveNewPassword,
       setUserData,
       updateUser,
       isPwd: ref(true),
       async onSubmit() {
+        if(password1.value === ''){
+          delete userForm.value.password
+        }
         const ok = await updateUser(userForm.value);
         if(ok){
           $q.notify({ type: 'positive', message: 'Your data has been updated correctly', color: 'blue' })
           await router.push("/");
-        } else{
-          $q.notify({ type: 'warning', message: 'Email already in use!'})
-          userForm.value.username = ''
         }
 
       },

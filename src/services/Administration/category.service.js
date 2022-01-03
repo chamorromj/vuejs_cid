@@ -1,12 +1,14 @@
-import { API_URL } from "src/utils/constants";
-import UserService from "../Profile/user.service";
+import { API_URL } from "src/utils/constants"
+import UserService from "../Profile/user.service"
+const userService = new UserService()
+
 
 export default class CategoryService {
   async addCategory(category) {
-    const userService = new UserService();
-    const token = userService.getToken();
+    const token = userService.getToken()
+
     try {
-      const url = `${API_URL}/administration/categories`;
+      const url = `${API_URL}/administration/categories`
       const params = {
         method: "POST",
         mode: "cors",
@@ -16,70 +18,51 @@ export default class CategoryService {
         },
         body: JSON.stringify(category),
       };
-      const response = await fetch(url, params);
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
   async listAllCategories() {
     try {
-      const url = `${API_URL}/public/categories`;
+      const url = `${API_URL}/public/categories`
       const params = {
         method: "GET",
         mode: "cors",
       };
-      const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      const response = await fetch(url, params)
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
-    }
-  }
-
-  async getCategoryNameById(idCategory) {
-    try {
-      const url = `${API_URL}/public/categories/${idCategory}`;
-      const params = {
-        method: "GET",
-        mode: "cors",
-      };
-      const response = await fetch(url, params);
-      const result = await response.json();
-
-      return result.name;
-    } catch (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return null
     }
   }
 
   async getCategoryById(idCategory) {
-    const userService = new UserService();
-    const token = userService.getToken();
     try {
-      const url = `${API_URL}/public/categories/${idCategory}`;
+      const url = `${API_URL}/public/categories/${idCategory}`
       const params = {
         method: "GET",
         mode: "cors",
       };
-      const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      const response = await fetch(url, params)
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return null
     }
   }
 
   async updateCategory(category) {
-    const userService = new UserService();
-    const token = userService.getToken();
+    const token = userService.getToken()
+
     try {
-      const url = `${API_URL}/administration/categories/` + category.id;
+      const url = `${API_URL}/administration/categories/` + category.id
       const params = {
         method: "PUT",
         mode: "cors",
@@ -89,15 +72,14 @@ export default class CategoryService {
         },
         body: JSON.stringify(category),
       };
-      const response = await fetch(url, params);
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
-  showCategory(nameCategory) {
-    return null;
-  }
 }

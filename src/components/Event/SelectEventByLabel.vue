@@ -23,7 +23,7 @@
           q-mt-xl
           text-black
         "
-        style="top: 20px; width: 92%; background-color: gray"
+        style="top: 20px; width: 92%; background-color: gray; z-index:1"
       >
         <q-list bordered separator class="bg-white">
           <q-item
@@ -32,7 +32,7 @@
             v-for="result in searchResults"
             :key="result.id"
           >
-            <q-item-section @click="goToEvent(result.id)">{{
+            <q-item-section @click="goToEvent(result)">{{
               result.name
             }}</q-item-section>
           </q-item>
@@ -53,6 +53,7 @@ export default {
     const searchResults = ref(null);
     const router = useRouter();
     const text = ref("");
+    const store = useStore();
 
 
     const findLabels = async (text) => {
@@ -69,9 +70,11 @@ export default {
       }
     };
 
-    const goToEvent = (labelId) => {
+    const goToEvent = (label) => {
       emptyResults();
-      router.push({ name: "labels", params: { id: labelId } });
+      store.commit('ui/toggleSideMenu')
+      store.commit('administration/changeElement', label.name)
+      router.push({ name: "labels", params: { id: label.id } });
     };
 
     const emptyResults = () => {

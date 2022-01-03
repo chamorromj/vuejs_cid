@@ -8,8 +8,7 @@ export async function setEvent(state, event) {
 }
 
 export function setEvents(state, events) {
-  state.events = events;
-  console.log("Events setted")
+  state.events = events
 }
 
 

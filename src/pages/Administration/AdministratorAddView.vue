@@ -41,6 +41,7 @@
         type="email"
         v-model="username"
         label="Email"
+        @keydown.enter="onSubmit"
         lazy-rules
         :rules="[
           (val) => (val !== null && val !== '') || 'Please type the email',
@@ -52,6 +53,7 @@
         type="password"
         v-model="password"
         label="Password"
+        @keydown.enter="onSubmit"
         lazy-rules
         :rules="[
           (val) => (val !== null && val !== '') || 'Please type the password',

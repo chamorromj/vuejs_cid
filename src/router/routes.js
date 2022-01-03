@@ -5,16 +5,19 @@ const routes = [
     children: [
       { path: "",
         component: () => import("pages/Index.vue"),
+        meta: {public: true}
       },
       {
         path: "register",
         name: "register",
         component: () => import("src/pages/Profile/RegisterView.vue"),
+        meta: {public: true}
       },
       {
         path: "login",
         name: "login",
         component: () => import("src/pages/Profile/LoginView.vue"),
+        meta: {public: true}
       },
       {
         path: "update-user",
@@ -34,26 +37,23 @@ const routes = [
         component: () => import("pages/Event/OrderListView.vue"),
         meta: {protected: true}
       },
-      /*      {
-              path: "order",
-              name: "order",
-              component: () => import("components/Event/EventOrderView.vue"),
-              meta: {protected: true}
-            },*/
       {
         path: "events/:category",
         name: "events",
         component: () => import("pages/Event/EventsListView.vue"),
+        meta: {public: true}
       },
       {
         path: "labels/:id",
         name: "labels",
         component: () => import("pages/Event/EventsByLabelView.vue"),
+        meta: {public: true}
       },
       {
         path: "event/:id",
         name: "event",
         component: () => import("pages/Event/EventDetailView.vue"),
+        meta: {public: true}
       },
       {
         path: "categories-list",

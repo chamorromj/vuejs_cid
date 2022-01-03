@@ -1,12 +1,13 @@
-import { API_URL } from "src/utils/constants";
-import UserService from "../Profile/user.service";
+import { API_URL } from "src/utils/constants"
+import UserService from "../Profile/user.service"
+const userService = new UserService()
+
 
 export default class LabelService {
   async addLabel(label) {
-    const userService = new UserService();
     const token = userService.getToken();
     try {
-      const url = `${API_URL}/administration/labels`;
+      const url = `${API_URL}/administration/labels`
       const params = {
         method: "POST",
         mode: "cors",
@@ -16,19 +17,20 @@ export default class LabelService {
         },
         body: JSON.stringify(label),
       };
-      const response = await fetch(url, params);
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
   async updateLabel(label) {
-    const userService = new UserService();
-    const token = userService.getToken();
+    const token = userService.getToken()
     try {
-      const url = `${API_URL}/administration/labels/` + label.id;
+      const url = `${API_URL}/administration/labels/` + label.id
       const params = {
         method: "PUT",
         mode: "cors",
@@ -38,17 +40,19 @@ export default class LabelService {
         },
         body: JSON.stringify(label),
       };
-      const response = await fetch(url, params);
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
   async listAllLabels() {
     try {
-      const url = `${API_URL}/public/labels`;
+      const url = `${API_URL}/public/labels`
       const params = {
         method: "GET",
         mode: "cors",
@@ -56,17 +60,17 @@ export default class LabelService {
           "Content-Type": "application/json",
         },
       };
-      const response = await fetch(url, params);
-      return response.json();
+      const response = await fetch(url, params)
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return null
     }
   }
 
   async showLabel(id) {
     try {
-      const url = `${API_URL}/public/labels/${id}`;
+      const url = `${API_URL}/public/labels/${id}`
       const params = {
         method: "GET",
         mode: "cors",
@@ -74,21 +78,21 @@ export default class LabelService {
           "Content-Type": "application/json",
         },
       };
-      const response = await fetch(url, params);
+      const response = await fetch(url, params)
       if(response.status === 200){
         return response.json()
       } else{
         return false
       }
     } catch (error) {
-      console.log(error);
+      console.log(error)
       return null;
     }
   }
 
   async getLabelsByEventId(eventId){
     try {
-      const url = `${API_URL}/public/labels/event/${eventId}`;
+      const url = `${API_URL}/public/labels/event/${eventId}`
       const params = {
         method: "GET",
         mode: "cors",
@@ -105,10 +109,9 @@ export default class LabelService {
   }
 
   async removeLabel(label) {
-    const userService = new UserService();
     const token = userService.getToken();
     try {
-      const url = `${API_URL}/administration/labels`;
+      const url = `${API_URL}/administration/labels`
       const params = {
         method: "DELETE",
         mode: "cors",
@@ -119,16 +122,18 @@ export default class LabelService {
         body: JSON.stringify(label),
       };
       const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
   async searchLabelByName(label) {
     try {
-      const url = `${API_URL}/public/administration/labels/search/by-name`;
+      const url = `${API_URL}/public/administration/labels/search/by-name`
       const params = {
         method: "POST",
         mode: "cors",
@@ -137,11 +142,11 @@ export default class LabelService {
         },
         body: JSON.stringify(label),
       };
-      const response = await fetch(url, params);
-      return response.json();
+      const response = await fetch(url, params)
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return null
     }
   }
 

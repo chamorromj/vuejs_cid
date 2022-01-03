@@ -16,6 +16,7 @@
         type="text"
         v-model="name"
         label="Name"
+        @keydown.enter="onSubmit"
         lazy-rules
         :rules="[
           (val) =>
@@ -28,6 +29,7 @@
         filled
         autogrow
         type="text"
+        @keydown.enter="onSubmit"
         v-model="description"
         label="Description"
         lazy-rules

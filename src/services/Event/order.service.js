@@ -1,37 +1,18 @@
-import { API_URL } from "../../utils/constants";
+import { API_URL } from "src/utils/constants";
 import UserService from "../Profile/user.service";
 
-const userService = new UserService();
-const token = userService.getToken();
+const userService = new UserService()
+
+
 
 export default class OrderService {
   async showOrder(orderId) {
     return null;
   }
 
-  async listOrders() {
-    try {
-      const url = `${API_URL}/orders`;
-      const params = {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          Authorization: "Bearer " + token,
-          "Content-Type": "application/json",
-        },
-      };
-      const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  }
-
   async addOrder(order) {
-    const userService = new UserService();
     const token = userService.getToken();
+
     try {
       const url = `${API_URL}/orders/order`;
       const params = {
@@ -43,34 +24,40 @@ export default class OrderService {
         },
         body: JSON.stringify(order),
       };
-      const response = await fetch(url, params);
-      console.log(response)
-      const result = await response.json();
-      return result;
+      const response = await fetch(url, params)
+      if (response.status === 204){
+        return false
+      }
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
-  async listOrdersByUser(userId) {
-    const userService = new UserService();
+  async listOrdersByUser(user) {
     const token = userService.getToken();
+
     try {
-      const url = `${API_URL}/orders/${userId}`;
+      const url = `${API_URL}/orders/search/by-email`;
       const params = {
-        method: "GET",
+        method: "POST",
         mode: "cors",
         headers: {
           Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify(user),
       };
-      const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 }

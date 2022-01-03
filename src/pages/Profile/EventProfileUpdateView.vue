@@ -76,7 +76,7 @@
                   <template v-slot:prepend>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-date v-model="startDate" mask="YYYY-MM-DD HH:mm">
+                        <q-date v-model="startDate" mask="YYYY-MM-DD HH:mm" :options="dateOptions">
                           <div class="row items-center justify-end q-gutter-sm">
                             <q-btn label="CLEAN" color="secondary" @click="startDate=null" flat v-close-popup />
                             <q-btn label="SET" color="primary" flat v-close-popup />
@@ -108,7 +108,7 @@
                   <template v-slot:prepend>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-date v-model="endDate" mask="YYYY-MM-DD HH:mm">
+                        <q-date v-model="endDate" mask="YYYY-MM-DD HH:mm" :options="dateOptions">
                           <div class="row items-center justify-end q-gutter-sm">
                             <q-btn label="CLEAN" color="secondary" @click="endDate=null" flat v-close-popup />
                             <q-btn label="SET" color="primary" flat v-close-popup />
@@ -251,6 +251,9 @@
       </div>
     </q-tab-panel>
   </q-tab-panels>
+
+  <q-input class="hidden" v-model="startDateWithoutChanges" />
+  <q-input class="hidden" v-model="endDateWithoutChanges" />
 </template>
 
 <script>
@@ -262,6 +265,7 @@ import CategoryService from "../../services/Administration/category.service";
 import EventOrganizerService from "src/services/Administration/eventorganizer.service";
 import Swal from "sweetalert2";
 import {useStore} from "vuex";
+import moment from "moment";
 
 export default defineComponent({
   name: "NewEventForm",
@@ -294,6 +298,9 @@ export default defineComponent({
     let tab = ref("data")
     const userId = store.getters["user/getUserId"]
     let event = ref(null)
+    let startDateWithoutChanges = ref(null)
+    let endDateWithoutChanges = ref(null)
+    let endDateEmpty = ref(true)
 
     onMounted(async () => {
       let eventprofileService = new EventProfileService()
@@ -301,8 +308,10 @@ export default defineComponent({
       eventOrganizerId.value = event.value.eventOrganizerId
       name.value = event.value.name
       description.value = event.value.description
-      startDate.value = event.value.startDate
-      endDate.value = event.value.endDate
+      startDate.value = formatToShow(event.value.startDate)
+      endDate.value = formatToShow(event.value.endDate)
+      startDateWithoutChanges.value = event.value.startDate
+      endDateWithoutChanges.value = event.value.endDate
       url.value = event.value.url
       categoryId.value = event.value.categoryId
       img.value = event.value.img
@@ -328,10 +337,10 @@ export default defineComponent({
         options.value.push(option);
       });
 
+
     });
 
     const handleFileUpload = (event) =>{
-      console.log("Charging file")
       if (event.size > 1048576){
         tooHeavyImg()
       } else{
@@ -339,8 +348,25 @@ export default defineComponent({
       }
     };
 
+    const formatToShow = (anyDate) =>{
+      return date.formatDate(anyDate, 'DD-MM-YYYY HH:mm')
+    }
+
     const formatDateForDataBase = (anyDate) =>{
       return date.formatDate(anyDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+    }
+
+    const isValidDateTime = (datetime) =>{
+      let now = date.formatDate(Date.now(), 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+      return moment(datetime).isSameOrAfter(now)
+    }
+
+    const compareDates = ()=>{
+      if(endDateEmpty.value){
+        return true
+      } else{
+        return moment(formatToShow(endDate.value)).isSameOrAfter(startDate.value)
+      }
     }
 
     const submitFile = async (id)=>{
@@ -349,7 +375,7 @@ export default defineComponent({
     }
 
     const tooHeavyImg =()=>{
-      Swal.fire("Image too heavy!!!", "Remember, the maximum weigh for the image is 2 MB", "warning");
+      Swal.fire("Image too heavy!!!", "Sorry, the maximum weigh for the image is 2 MB", "warning");
     }
 
     const emptyForm = () =>{
@@ -357,79 +383,102 @@ export default defineComponent({
     }
 
     const isValidUrl = (text) =>{
-      const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-      return pattern.test(text);
+      const pattern = new RegExp("((http|https)://)?(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)")
+      return pattern.test(text)
     }
 
-    const submit = async() =>{
-      if(!eventOrganizerId.value){
-        $q.notify({ type: 'warning', message: 'You must select an event organizer' })
-        tab.value='data'
-      } else if(name.value ===''){
-        $q.notify({ type: 'warning', message: 'You must write a name for the event' })
-        name.value = event.value.name
-        tab.value='data'
-      } else if(description.value ===''){
-        $q.notify({ type: 'warning', message: 'You must write a description for the event' })
-        description.value = event.value.description
-        tab.value='data'
-        /*        } else if(!startDate.value){
-                  $q.notify({ type: 'warning', message: 'You must inform the start date' })
-                  tab.value='data'*/
-      } else if(availableTickets.value <= 0){
-        $q.notify({ type: 'warning', message: "Number of available tickets can't be negative or zero" })
-        availableTickets.value = event.value.availableTickets
-        tab.value='data'
-      } else if(url.value === ''){
-        $q.notify({ type: 'warning', message: 'You must include the url for the event' })
-        url.value = event.value.url
-      } else if(!isValidUrl(url.value)){
-        $q.notify({ type: 'warning', message: 'The url is not valid' })
-      } else if(!picture.value){
-        $q.notify({ type: 'warning', message: 'You must upload a picture' })
-      } else if(!categoryId.value) {
-        $q.notify({type: 'warning', message: 'You must select a category'})
-      } else {
-        const formData = {
-          id: id.value,
-          eventOrganizerId: eventOrganizerId.value,
-          name: name.value,
-          description: description.value,
-          startDate: formatDateForDataBase(startDate.value),
-          endDate: formatDateForDataBase(endDate.value),
-          url: url.value,
-          categoryId: categoryId.value,
-          availableTickets: availableTickets.value
-        }
-        try {
-          const eventProfileService = new EventProfileService();
-          let ok = await eventProfileService.updateEvent(formData)
-          if(file){
-            await submitFile(event.value.id)
-          }
-          if(ok){
-            $q.notify({ type: 'positive', message: 'Great! The Event has been updated', color: 'blue', icon: 'thumb_up' })
-            emptyForm();
-            await router.push("/events-list")
-          }
 
-        } catch (error) {
-          console.log(error);
-        }
+
+    const submit = async() =>{
+      if(endDate.value !== null && endDate.value){
+        endDateEmpty.value = false
       }
+        if(!eventOrganizerId.value){
+          $q.notify({ type: 'warning', message: 'You must select an event organizer' })
+          tab.value='data'
+        } else if(name.value ===''){
+          $q.notify({ type: 'warning', message: 'You must write a name for the event' })
+          name.value = event.value.name
+          tab.value='data'
+        } else if(description.value ===''){
+          $q.notify({ type: 'warning', message: 'You must write a description for the event' })
+          description.value = event.value.description
+          tab.value='data'
+        } else if(!startDate.value){
+          $q.notify({ type: 'warning', message: 'You must inform the start date' })
+          tab.value='data'
+        } else if(startDate.value!==formatToShow(event.value.startDate) && !isValidDateTime(startDate.value)){
+          $q.notify({ type: 'warning', message: "You can not create an event for a previous datetime" })
+          startDate.value = formatToShow(startDateWithoutChanges.value)
+          tab.value='data'
+        } else if(!compareDates()){
+          $q.notify({ type: 'warning', message: "You can not create an event for a previous datetime" })
+          endDate.value = formatToShow(endDateWithoutChanges.value)
+          tab.value='data'
+        } else if(endDate.value!==formatToShow(event.value.endDate) && !isValidDateTime(endDate.value)){
+          $q.notify({ type: 'warning', message: "End date can not be previous than start date" })
+          endDate.value = formatToShow(endDateWithoutChanges.value)
+          tab.value='data'
+        } else if(availableTickets.value <= 0){
+          $q.notify({ type: 'warning', message: "Number of available tickets can't be negative or zero" })
+          availableTickets.value = event.value.availableTickets
+          tab.value='data'
+        } else if(url.value === ''){
+          $q.notify({ type: 'warning', message: 'You must include the url for the event' })
+          url.value = event.value.url
+        } else if(!isValidUrl(url.value)){
+          $q.notify({ type: 'warning', message: 'The url is not valid' })
+        } else if(!picture.value && !img.value){
+          $q.notify({ type: 'warning', message: 'You must upload a picture' })
+        } else if(!categoryId.value) {
+          $q.notify({type: 'warning', message: 'You must select a category'})
+        } else {
+          const formData = {
+            id: id.value,
+            eventOrganizerId: eventOrganizerId.value,
+            name: name.value,
+            description: description.value,
+            startDate: formatDateForDataBase(startDateWithoutChanges.value),
+            endDate: formatDateForDataBase(endDateWithoutChanges.value),
+            url: url.value,
+            categoryId: categoryId.value,
+            availableTickets: availableTickets.value
+          }
+          if (endDate.value!==formatToShow(event.value.endDate)){
+            formData.endDate = formatDateForDataBase(endDate.value)
+          }
+          if (startDate.value!==formatToShow(event.value.startDate)){
+            formData.startDate = formatDateForDataBase(startDate.value)
+          }
+          try {
+            const eventProfileService = new EventProfileService();
+            let ok = await eventProfileService.updateEvent(formData)
+            if(file){
+              await submitFile(event.value.id)
+            }
+            if(ok){
+              $q.notify({ type: 'positive', message: 'Great! The Event has been updated', color: 'blue', icon: 'thumb_up' })
+              emptyForm();
+              await router.push("/events-list")
+            }
+
+          } catch (error) {
+            console.log(error);
+          }
+        }
 
     };
-    /*    Great! The Event has been updated*/
     return {
+      dateOptions: (date) => {
+        return moment(date).isSameOrAfter(Date.now())
+      },
       eventOrganizerId,
       name,
       description,
+      endDateEmpty,
       startDate,
+      startDateWithoutChanges,
+      endDateWithoutChanges,
       isValidUrl,
       availableTickets,
       endDate,
@@ -444,6 +493,7 @@ export default defineComponent({
       tooHeavyImg,
       handleFileUpload,
       formatDateForDataBase,
+      formatToShow,
       formDataUpdate,
       options,
       options_organizer,
@@ -457,3 +507,4 @@ export default defineComponent({
   },
 });
 </script>
+

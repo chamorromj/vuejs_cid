@@ -1,11 +1,12 @@
 export default function () {
   return {
-    event: null,
+    event: {
+      name: '',
+      availableTickets: 0,
+      id: 0
+    },
     eventLabels: [],
     eventCategory: null,
-    events: [
-      {},
-      {}
-    ],
+    events: [],
   };
 }

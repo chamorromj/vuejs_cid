@@ -1,11 +1,14 @@
 import { API_URL } from "src/utils/constants";
 import UserService from "../Profile/user.service";
+const userService = new UserService()
 
-const userService = new UserService();
-const token = userService.getToken();
+
 
 export default class MediaService {
   async sendComment(comment) {
+    const token = userService.getToken();
+    let response = null
+
     try {
       const url = `${API_URL}/comments/comment`;
       const params = {
@@ -17,11 +20,13 @@ export default class MediaService {
         },
         body: JSON.stringify(comment),
       };
-      const response = await fetch(url, params);
-      return {ok:true};
+      response = await fetch(url, params);
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
+      return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
@@ -45,6 +50,8 @@ export default class MediaService {
   }
 
   async getRatingsByUserId(userId) {
+    const token = userService.getToken();
+    let response = null
     try {
       const url = `${API_URL}/ratings/rating/user/${userId}`;
       const params = {
@@ -55,18 +62,20 @@ export default class MediaService {
           Accepts: "application/json",
         },
       };
-      const response = await fetch(url, params);
-      console.log(response)
-
-      const result = response.json();
-      return result;
+      response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
   async addRating(rating) {
+    const token = userService.getToken();
+    let response = null
+
     try {
       const url = `${API_URL}/ratings/rating`;
       const params = {
@@ -78,12 +87,13 @@ export default class MediaService {
         },
         body: JSON.stringify(rating),
       };
-      const response = await fetch(url, params)
-      console.log(response)
+      response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
 
@@ -108,8 +118,9 @@ export default class MediaService {
   }
 
   async addToFavorites(favorite) {
-    const userService = new UserService();
     const token = userService.getToken();
+    let response = null
+
     try {
       const url = `${API_URL}/favorites/favorite`;
       const params = {
@@ -121,19 +132,20 @@ export default class MediaService {
         },
         body: JSON.stringify(favorite),
       };
-      const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      response = await fetch(url, params);
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
+      return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      return {ok: false}
     }
 
   }
 
   async listAllFavoritesByUser(userId) {
-    const userService = new UserService();
     const token = userService.getToken();
+
     try {
       const url = `${API_URL}/favorites/user/${userId}`;
       const params = {
@@ -144,11 +156,13 @@ export default class MediaService {
           "Content-Type": "application/json",
         },
       };
-      const response = await fetch(url, params);
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
       return response.json();
     } catch (error) {
-      console.log(error);
-      return null;
+      return false
     }
   }
 }

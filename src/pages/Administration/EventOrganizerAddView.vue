@@ -16,6 +16,7 @@
         type="text"
         v-model="name"
         label="Name"
+        @keydown.enter="checkNotEmpty"
         lazy-rules
         :rules="[
           (val) =>
@@ -30,6 +31,7 @@
         type="text"
         v-model="description"
         label="Description"
+        @keydown.enter="checkNotEmpty"
         lazy-rules
         :rules="[
           (val) =>
@@ -66,30 +68,44 @@ export default {
     const router = useRouter();
     const $q = useQuasar()
 
+    const  onSubmit= async()=>{
+      const organizer = {
+        name: name.value,
+        description: description.value,
+      };
+      try {
+        const eventOrganizerService = new EventOrganizerService();
+        const ok = await eventOrganizerService.addEventOrganizer(organizer);
+        if (ok){
+          $q.notify({ type: 'positive', message: 'The new Event organizer has been created', color: 'blue' })
+          router.push("/organizers-list");
+        } else {
+          $q.notify({ type: 'warning', message: 'It exists an Event organizer with this name'})
+          name.value = ''
+        }
+
+      } catch (error) {
+        console.log(error);
+      }
+
+
+    }
+
+    const checkNotEmpty = ()=>{
+      if(!name.value || name.value==''){
+        $q.notify({ type: 'warning', message: 'You must write the name of the event organizer'})
+      } else if (!description.value || description.value===''){
+        $q.notify({ type: 'warning', message: 'You must write the description of the event organizer'})
+      } else {
+        onSubmit()
+      }
+    }
+
     return {
+      checkNotEmpty,
       name,
       description,
-      async onSubmit() {
-        const organizer = {
-          name: name.value,
-          description: description.value,
-        };
-        console.log(organizer);
-        try {
-          const eventOrganizerService = new EventOrganizerService();
-          const ok = await eventOrganizerService.addEventOrganizer(organizer);
-          if (ok){
-            $q.notify({ type: 'positive', message: 'The new Event organizer has been created', color: 'blue' })
-            router.push("/organizers-list");
-          } else {
-            $q.notify({ type: 'warning', message: 'It exists an Event organizer with this name'})
-            name.value = ''
-          }
-
-        } catch (error) {
-          console.log(error);
-        }
-      },
+      onSubmit,
       onReset() {
         name.value = null;
         description.value = null;

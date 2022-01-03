@@ -32,7 +32,3 @@ export function setResponse(state, response) {
   )[0].response = response
 }
 
-/*export function popQuestion(state, questionId){
-let q = state.questions.filter(element =>element.id == questionId)[0]
-  console.log(q)
-}*/

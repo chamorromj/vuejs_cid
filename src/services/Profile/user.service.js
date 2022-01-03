@@ -1,11 +1,13 @@
-import { API_URL } from "src/utils/constants";
-import { useStore } from "vuex";
-import { computed } from "vue";
+import { API_URL } from "src/utils/constants"
+import { useStore } from "vuex"
+import { computed } from "vue"
+import {Notify} from "quasar"
 
+const store = useStore()
 export default class UserService {
   async registerUser(formData) {
     try {
-      const url = `${API_URL}/register`;
+      const url = `${API_URL}/register`
       const params = {
         method: "POST",
         mode: "cors",
@@ -13,23 +15,24 @@ export default class UserService {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      };
-      const response = await fetch(url, params);
+      }
+      const response = await fetch(url, params)
       if(!response.ok){
         return response.ok
       } else{
-        return response.json();
+        return response.json()
       }
     } catch (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return null
     }
   }
 
   async updateUser(user) {
-    const token = this.getToken();
+    const token = this.getToken()
+
     try {
-      const url = `${API_URL}/users/` + user.id;
+      const url = `${API_URL}/users/` + user.id
       const params = {
         method: "PUT",
         mode: "cors",
@@ -38,25 +41,29 @@ export default class UserService {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(user),
-      };
+      }
       const response = await fetch(url, params)
+      if(response.status === 401){
+        return this.logoutTokenExpired()
+      }
       return response.ok
     } catch (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return error
     }
   }
 
   async showUser() {
-    const store = useStore();
-    return computed(() => store.getters["user/getUser"]);
+    const store = useStore()
+    return computed(() => store.getters["user/getUser"])
   }
 
 
   async getUserById(id) {
-    const token = this.getToken();
+    const token = this.getToken()
+
     try {
-      const url = `${API_URL}/users/${id}`;
+      const url = `${API_URL}/users/${id}`
       const params = {
         method: "GET",
         mode: "cors",
@@ -64,37 +71,40 @@ export default class UserService {
           Authorization: "Bearer " + token,
           Accepts: "application/json"
         },
-      };
-      const response = await fetch(url, params);
+      }
+      const response = await fetch(url, params)
       if(response.status===204){
         return {ok:false}
       }
-      return response.json();
+      if(response.status === 401){
+        return this.logoutTokenExpired()
+      }
+      return response.json()
     } catch (error) {
-      return error;
+      return this.logoutTokenExpired()
     }
   }
 
   async getLanguages(){
     try {
-      const url = `${API_URL}/public/administration/languages`;
+      const url = `${API_URL}/public/administration/languages`
       const params = {
         method: "GET",
         mode: "cors",
         headers: {
           Accept: "application/json"
         },
-      };
-      const response = await fetch(url, params);
-      return response.json();
+      }
+      const response = await fetch(url, params)
+      return response.json()
     } catch (error) {
-      return error;
+      return error
     }
   }
 
   async login(formData) {
     try {
-      const url = `${API_URL}/login`;
+      const url = `${API_URL}/login`
       const params = {
         method: "POST",
         mode: "cors",
@@ -102,36 +112,48 @@ export default class UserService {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      };
-      const response = await fetch(url, params);
-      return response.json();
+      }
+      const response = await fetch(url, params)
+
+      if(response.status !== 200){
+        return {userId:false}
+      }
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      console.log(error)
+      return {ok:false}
     }
   }
 
 
 
   async logout() {
-    const store = useStore();
-    store.commit("user/removeUser");
+
+    store.commit("user/removeUser")
     this.removeToken();
     return null;
   }
 
+  async logoutTokenExpired(){
+    store.commit("user/removeUser")
+    this.removeToken()
+    Notify.create({
+      type: 'warning', message: 'The time of connection has expired'
+    })
+    store.commit("logout")
+    return null
+  }
+
   getUser() {
-    const store = useStore();
-    return store.getters["user/getUser"];
+    return store.getters["user/getUser"]
   }
 
 
   getToken() {
-    let token = localStorage.getItem("token");
-    return token;
+    return localStorage.getItem("token")
   }
 
   removeToken() {
-    localStorage.removeItem("token");
+    localStorage.removeItem("token")
   }
 }

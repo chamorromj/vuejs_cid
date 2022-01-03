@@ -13,7 +13,6 @@
         option-value="id"
         map-options
         emit-value
-        @filter="filterFn"
         style="width: 250px"
         behavior="menu"
         @update:model-value="filterByCategory"
@@ -34,21 +33,26 @@
 import {onMounted, ref} from "vue";
 import CategoryService from "src/services/Administration/category.service";
 import {useRouter} from "vue-router";
+import {useStore} from "vuex";
 
 export default {
   setup() {
     let stringOptions = []
     const categorySelected = ref(null)
-    const options = ref(stringOptions)
+    const options = ref([])
     const router = useRouter()
+    const store = useStore()
 
-    onMounted(async() => {
+    onMounted(async()=>{
       let categoryService = new CategoryService();
-      stringOptions = await categoryService.listAllCategories()
+      options.value = await categoryService.listAllCategories()
     })
 
     const filterByCategory = () => {
+      store.commit("event/setEvents", [])
+      store.commit("media/setQuestions", [])
       let sel = categorySelected.value
+      store.commit('ui/toggleSideMenu')
       categorySelected.value = null
       router.push({ name: "events", params: { category: sel } });
       }
@@ -59,22 +63,9 @@ export default {
       stringOptions,
       options,
 
-      filterFn (val, update) {
-        if (val === '') {
-          update(() => {
-            options.value = stringOptions
-          })
-          return
-        }
 
-        update(() => {
-          const needle = val.toLowerCase()
-          options.value = stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
-        })
-      }
     }
   }
 }
 </script>
 
-<style></style>

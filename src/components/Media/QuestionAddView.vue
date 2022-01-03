@@ -20,7 +20,7 @@
             <q-item>
               <q-item-section>
                 <q-item-label class="q-pb-xs">Title</q-item-label>
-                <q-input filled type="text" v-model="title" label="Title"/>
+                <q-input filled type="text" v-model="title" label="Title" @keyup.enter="checkQuestion"/>
               </q-item-section>
             </q-item>
             <q-item>
@@ -31,6 +31,7 @@
                     type="text"
                     v-model="message"
                     label="Question"
+                    @keyup.enter="checkQuestion"
                 />
               </q-item-section>
             </q-item>
@@ -75,13 +76,21 @@ setup(){
   const user = computed(() => store.getters["user/getUser"]);
   const event = computed(() => store.getters["event/getEvent"]);
 
-  const askQuestion = () => {
+  const checkQuestion = () => {
     if(!title.value){
-      emptyForm()
       $q.notify({ type: 'warning', message: "You should write a title for your question! Try again", color: 'secondary' })
     }
     else if(!message.value){
-      emptyForm()
+      $q.notify({ type: 'warning', message: "You should write a message for your question! Try again", color: 'secondary' })
+    } else{
+      $q.notify({ type: 'warning', message: "Click SEND button to send your question", color: 'secondary' })
+    }
+  }
+  const askQuestion = () => {
+    if(!title.value){
+      $q.notify({ type: 'warning', message: "You should write a title for your question! Try again", color: 'secondary' })
+    }
+    else if(!message.value){
       $q.notify({ type: 'warning', message: "You should write a message for your question! Try again", color: 'secondary' })
     } else {
       const question = {
@@ -90,20 +99,23 @@ setup(){
         eventId: event.value.id,
         userId: user.value ? user.value.id : null,
         createdAt: Date.now(),
-      };
-      console.log(question);
+      }
       try {
-        store.dispatch("media/addQuestion", question);
-        emptyForm();
+        const id = store.dispatch("media/addQuestion", question);
+        if(id){
+          $q.notify({ type: 'positive', message: 'Thanks for your interest. Your question will be answered as soon as possible', color: 'blue'})
+        }
+        emptyForm()
+        close()
       } catch (error) {
-        console.log(error);
+        console.log(error)
       }
     }
   };
 
   const emptyForm = () => {
-    title.value = null;
-    message.value = null;
+    title.value = null
+    message.value = null
   };
 
   return {
@@ -111,6 +123,7 @@ setup(){
     title,
     message,
     user,
+    checkQuestion,
     askQuestion,
   };
 }

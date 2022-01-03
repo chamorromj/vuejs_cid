@@ -1,9 +1,13 @@
-import { API_URL } from "../../utils/constants";
-import { date } from 'quasar'
-import { useStore } from "vuex";
+import { API_URL } from "src/utils/constants";
 import UserService from "../Profile/user.service";
+import {useStore} from "vuex";
+const userService = new UserService()
+
+
+const store = useStore()
 
 export default class EventService {
+
   async listAllEvents() {
     try {
       const url = `${API_URL}/public/events`;
@@ -23,23 +27,18 @@ export default class EventService {
   }
 
   async findEventsByLabel(label) {
-    const userService = new UserService();
-    const token = userService.getToken();
     try {
       const url = `${API_URL}/public/events/search/by-label`;
       const params = {
         method: "POST",
         mode: "cors",
         headers: {
-          Authorization: "Bearer " + token,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(label),
       };
-      const response = await fetch(url, params);
-      const result = await response.json();
-      console.log(result);
-      return result;
+      const response = await fetch(url, params)
+      return response.json();
     } catch (error) {
       console.log(error);
       return null;
@@ -47,64 +46,53 @@ export default class EventService {
   }
 
   async findEventsByName(text) {
-    try {
-      const event = {
-        name: text,
-      };
-      const url = `${API_URL}/public/events/search/by-name`;
-      const params = {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(event),
-      };
-      const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.log(error);
-      return null;
+    if(text.length>0 && text.trim() !== ''){
+      try {
+        const event = {
+          name: text,
+        };
+        const url = `${API_URL}/public/events/search/by-name`;
+        const params = {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(event),
+        };
+        const response = await fetch(url, params);
+        return response.json();
+      } catch (error) {
+        console.log(error);
+        return null;
+      }
+    } else{
+      return false
     }
   }
 
   async getEventById(eventId) {
     try {
-      const url = `${API_URL}/public/events/${eventId}`;
+      let url = "";
+      if(typeof(eventId) !== 'undefined') {
+        url = `${API_URL}/public/events/${eventId}`
+      } else {
+        return false
+      }
       const params = {
         method: "GET",
         mode: "cors",
       };
       const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      if(response.status === 200){
+        return response.json()
+      } else{
+        return false
+      }
     } catch (error) {
       console.log(error);
       return null;
     }
-  }
-
-
-  async findEventsByLabel(label) {
-  try {
-    const url = `${API_URL}/public/events/search/by-label`;
-    const params = {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(label),
-    };
-    const response = await fetch(url, params);
-    const result = await response.json();
-    console.log(result)
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
   }
 
   async findEventsByCategory(categoryId) {
@@ -115,28 +103,21 @@ export default class EventService {
       } else {
         url = `${API_URL}/public/events`;
       }
-
-
       const params = {
         method: "GET",
         mode: "cors",
       };
       const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      return response.json();
     } catch (error) {
       console.log(error);
       return null;
     }
   }
 
-  async showEvent(eventId) {
-    return null;
-  }
-
   async orderEvent(order) {
-    const userService = new UserService();
     const token = userService.getToken();
+
     try {
       const url = `${API_URL}/orders`;
       const params = {
@@ -148,12 +129,39 @@ export default class EventService {
         },
         body: JSON.stringify(order),
       };
-      const response = await fetch(url, params);
-      const result = await response.json();
-      return result;
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
+      return response.json()
     } catch (error) {
-      console.log(error);
-      return null;
+      return userService.logoutTokenExpired()
     }
   }
+
+  async getEventsByAdministratorEventOrganizers(organizerId){
+    const token = userService.getToken();
+
+    try {
+      const url = `${API_URL}/administration/events/search/by-event-organizer/${organizerId}`;
+      const params = {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await fetch(url, params)
+      if(response.status === 401){
+        return userService.logoutTokenExpired()
+      }
+      return response.json()
+    } catch (error) {
+      return userService.logoutTokenExpired()
+    }
+  }
+
+
+
 }

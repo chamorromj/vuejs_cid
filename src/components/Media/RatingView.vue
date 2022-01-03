@@ -76,8 +76,9 @@ export default {
           userRating.value = isRated
           await store.commit("media/addRating", isRated)
         }
-        avgRate.value = props.event.avgRate
+
       }
+      avgRate.value = props.event.avgRate
 
     })
 

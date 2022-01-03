@@ -16,6 +16,7 @@
         type="text"
         v-model="name"
         label="Name"
+        @keydown.enter="onSubmit"
         lazy-rules
         :rules="[
           (val) =>
@@ -30,6 +31,7 @@
         type="text"
         v-model="description"
         label="Description"
+        @keydown.enter="onSubmit"
         lazy-rules
         :rules="[
           (val) =>
