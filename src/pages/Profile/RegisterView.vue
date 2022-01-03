@@ -49,6 +49,7 @@
             lazy-rules
             :rules="[
               (val) => (val !== null && val !== '') || 'Please type your NIF',
+              (val) => (val.length<=9)||'Max length is 9 characters',
             ]"
           />
         </div>
@@ -260,15 +261,25 @@ export default defineComponent({
             "warning"
           );
         } else {
+          if (userForm.value.nif.length > 9) {
+            $q.notify({
+              type: 'warning',
+              message: 'The length of the field NIF is too large. The maximum is 9 characters'
+            })
+            return false
+          }
           const ok = await createUser(userForm.value);
           if (!ok) {
             Notify.create({
               type: 'warning', message: "The username is in use. Try with another"
             })
             userForm.value.username = null
-          }
-          else {
-            $q.notify({ type: 'positive', message: 'Great! Your user has been created and you are now logged in the system', color: 'blue' })
+          } else {
+            $q.notify({
+              type: 'positive',
+              message: 'Great! Your user has been created and you are now logged in the system',
+              color: 'blue'
+            })
 
             router.push("/");
           }

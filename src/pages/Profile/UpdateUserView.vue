@@ -45,6 +45,7 @@
             lazy-rules
             :rules="[
               (val) => (val !== null && val !== '') || 'Please type your NIF',
+              (val) => (val.length<=9)||'Max length is 9 characters',
             ]"
           />
         </div>
@@ -144,6 +145,12 @@
                 label="Change password"
                 color="primary"
                 @click="saveNewPassword"
+              />
+              <q-btn
+                class="col-12 col-md-8 q-my-sm q-mx-sm"
+                label="CANCEL"
+                color="secondary"
+                v-close-popup
               />
             </q-card-actions>
           </q-card-section>
