@@ -1,4 +1,11 @@
 <template>
+<!--   <q-circular-progress
+    v-if="authStatus === 'authenticating'"
+    :value="0"
+    size="50px"
+    color="orange"
+    class="q-ma-md"
+  />-->
   <router-view />
 </template>
 <script>
@@ -9,7 +16,6 @@ export default defineComponent({
   name: "App",
   setup() {
     const store = useStore();
-    const authStatus = computed(() => store.getters["user/currentState"]);
     const checkAuthStatus = async () => {
       const resp = await store.dispatch("user/checkAuthentication");
       return resp;
@@ -17,8 +23,10 @@ export default defineComponent({
 
     checkAuthStatus();
 
+
     return {
-      authStatus,
+      authStatus: computed(() => store.getters["user/currentState"]),
+      checkAuthStatus,
     };
   },
 });

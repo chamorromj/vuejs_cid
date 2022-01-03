@@ -1,14 +1,14 @@
 <template>
   <q-toolbar class="bg-primary text-black shadow-2">
     <q-avatar class="lt-sm">
-      <img src="~assets/avatar_logo.png" to="/">
+      <img src="~assets/avatar_logo.png" class="cursor-pointer" @click="homeClicked"/>
     </q-avatar>
     <q-item-label header class="gt-xs cursor-pointer justify-center">
       <img
         alt="CultureInDaHouse logo"
         src="~assets/logo.png"
         style="width: 200px"
-        @click="$router.push('/')"
+        @click="homeClicked"
       />
     </q-item-label>
     <q-btn flat round dense icon="search" class="q-mr-sm" @click="toggleSideMenu">
@@ -267,11 +267,6 @@ export default {
     const router = useRouter()
     const user = store.getters["user/getUser"]
 
-    /*onMounted(async () => {
-      const labelService = new LabelService();
-      const labels = await labelService.listAllLabels();
-      store.commit("label/setLabels", labels);
-    });*/
 
     const logout = () => {
       store.commit("user/logout");
@@ -282,8 +277,14 @@ export default {
       router.push("/update-user")
     }
 
+    const homeClicked = () =>{
+      store.commit("ui/toggleSideMenuFromHome")
+      router.push('/')
+    }
+
     return {
       goToUpdateUser,
+      homeClicked,
       isAdminUser: computed(() => store.getters["user/isAdminUser"]),
       isSuperAdminUser: computed(() => store.getters["user/isSuperAdminUser"]),
       userUsername: computed(()=> store.getters["user/getUserUserName"]),
@@ -295,3 +296,5 @@ export default {
   },
 };
 </script>
+
+<style></style>

@@ -17,11 +17,13 @@
     <SelectEventByName class="q-mt-md"/>
 
 
+
+
   </q-drawer>
 </template>
 
 <script>
-import { ref, defineAsyncComponent, computed } from "vue";
+import { defineAsyncComponent } from "vue";
 
 export default {
   name: "LeftDrawer",
@@ -36,6 +38,8 @@ export default {
       import("../Event/SelecEventByCategory.vue")
     ),
   },
+  setup(){
+  }
 };
 </script>
 

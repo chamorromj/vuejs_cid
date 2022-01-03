@@ -179,7 +179,7 @@ import {date, useQuasar} from "quasar";
 import LabelService from "src/services/Administration/label.service";
 import CommentListView from "pages/Media/CommentListView";
 import CommentAddView from "pages/Media/CommentAddView";
-import RatingView from "pages/Media/RatingView";
+import RatingView from "components/Media/RatingView";
 import EventOrderView from "components/Event/EventOrderView";
 import SuggestEventView from "components/Event/SuggestEventView";
 
