@@ -8,7 +8,7 @@
   />
   <q-card
     v-else
-    class="my-card q-ma-sm cursor-pointer"
+    class="my-card q-mt-sm q-mx-xs cursor-pointer"
     style="height: 490px"
   >
     <q-img
@@ -52,7 +52,7 @@
       </q-btn>
 
       <div class="text-overline text-orange-9">{{ event.categoryName }}</div>
-      <div class="row no-wrap items-center" @click="$emit('goToDetail', event)">
+      <div class="row wrap" @click="$emit('goToDetail', event)">
         <div class="text-h5 title-event q-py-none">
           {{ event.name }}
         </div>
@@ -180,7 +180,6 @@ export default {
       return ids.includes(eventId);
     }
 
-
     const callToRegister = () => {
       Swal.fire(
         "Please, sign up!",
@@ -206,10 +205,10 @@ export default {
 </script>
 <style  scoped>
 .title-event :hover{
-  pointer: hand
+  pointer: hand;
 }
 .my-card{
-  width: 300px
+  min-width: 300px;
 }
 </style>
 

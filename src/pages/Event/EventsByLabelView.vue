@@ -62,7 +62,6 @@ export default defineComponent({
     return {
       getEventsByLabel,
       events,
-      ListEvents,
     };
   },
 });

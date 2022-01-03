@@ -1,9 +1,9 @@
 <template>
-  <div class="row wrap">
+  <div class="grid cards">
     <div v-if="events.length === 0" class="text-h5 text-bold q-ma-lg">
-      There are no events that fits the parameters you chose
+      No events with your selection
     </div>
-    <div v-for="event in events" :key="event.id" class="justify-between justify-md-evenly my-grid">
+    <div v-for="event in events" :key="event.id">
       <EventDetailComponent
         :event="event"
         v-on:addToFavorites="addToFavorites"
@@ -19,11 +19,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import EventDetailComponent from "components/Event/EventDetailComponent.vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import Swal from "sweetalert2";
-import EventService from "src/services/Event/event.service";
 import {date, QSpinnerGears, useQuasar} from "quasar";
-import CategoryService from "src/services/Administration/category.service";
-import EventOrganizerService from "src/services/Administration/eventorganizer.service";
 import MediaService from "src/services/Media/media.service";
 
 export default {

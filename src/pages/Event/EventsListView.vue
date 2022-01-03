@@ -1,5 +1,5 @@
 <template>
-  <q-page class="row justify-between">
+  <q-page class="flex">
     <ListEvents :events="events" />
   </q-page>
 </template>
@@ -50,7 +50,6 @@ export default defineComponent({
     return {
       getEventsByCategory,
       events,
-      ListEvents,
     };
   },
 });
