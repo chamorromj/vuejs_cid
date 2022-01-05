@@ -208,7 +208,7 @@ export default {
   pointer: hand;
 }
 .my-card{
-  min-width: 300px;
+  width: 300px;
 }
 </style>
 

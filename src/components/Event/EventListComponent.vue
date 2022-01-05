@@ -1,5 +1,5 @@
 <template>
-  <div class="grid cards">
+  <div class="row wrap">
     <div v-if="events.length === 0" class="text-h5 text-bold q-ma-lg">
       No events with your selection
     </div>
