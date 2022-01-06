@@ -105,7 +105,6 @@
                        v-if="user"
                        icon="send"
                        label="SUGGEST"
-                       disable
                        color="primary"
                        @click="show_suggest = true"
                 />
