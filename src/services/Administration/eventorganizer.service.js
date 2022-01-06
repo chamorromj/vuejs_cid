@@ -85,10 +85,14 @@ export default class EventOrganizerService {
       const response = await fetch(url, params)
       if(response.status === 401){
         return userService.logoutTokenExpired()
+      } else if(response.status === 500){
+        return false
+      } else{
+        return response.json()
       }
-      return response.json()
     } catch (error) {
-      return userService.logoutTokenExpired()
+      console.log(error)
+      return false
     }
   }
 

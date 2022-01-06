@@ -1,4 +1,8 @@
 <template>
+  <div class="text-h5 fixed-center" v-if="!options_organizer || options_organizer.length === 0">
+    You have no event organizers assigned
+  </div>
+  <div v-else>
     <q-tabs
       v-model="tab"
       dense
@@ -91,7 +95,8 @@
                         <q-popup-proxy transition-show="scale" transition-hide="scale">
                           <q-time v-model="formData.startDate" mask="YYYY-MM-DD HH:mm" format24h>
                             <div class="row items-center justify-end q-gutter-sm">
-                              <q-btn label="CLEAN" color="secondary" @click="formData.startDate=null" flat v-close-popup />
+                              <q-btn label="CLEAN" color="secondary" @click="formData.startDate=null"
+                                     flat v-close-popup />
                               <q-btn label="SET" color="primary" flat v-close-popup />
                             </div>
                           </q-time>
@@ -109,7 +114,17 @@
                     <template v-slot:prepend>
                       <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy transition-show="scale" transition-hide="scale">
-                          <q-date v-model="formData.endDate" mask="YYYY-MM-DD HH:mm" :options="dateOptions">
+                          <q-date
+                          v-model="formData.endDate"
+                          mask="YYYY-MM-DD HH:mm"
+                          :options="dateOptions"
+                          lazy-rules
+                          :rules="[
+                          (val) =>
+                          (val < formData.startDate) ||
+                          'The end date can not be previous to the start date',
+                          ]"
+                          >
                             <div class="row items-center justify-end q-gutter-sm">
                               <q-btn label="CLEAN" color="secondary" @click="formData.endDate=null" flat v-close-popup />
                               <q-btn label="SET" color="primary" flat v-close-popup />
@@ -246,6 +261,7 @@
     </q-tab-panels>
 
   <q-input class="hidden" v-model="endDateEmpty" />
+  </div>
 </template>
 
 <script>
@@ -283,13 +299,15 @@ export default defineComponent({
       formData.value.availableTickets = 200
       const eventOrganizerService = new EventOrganizerService();
       organizers = await eventOrganizerService.getEventOrganizersByAdministrator(userId);
-      organizers.forEach((element) => {
-        option = {
-          label: element.name,
-          value: element.id,
-        };
-        options_organizer.value.push(option);
-      });
+      if(organizers.length >0){
+        organizers.forEach((element) => {
+          option = {
+            label: element.name,
+            value: element.id,
+          };
+          options_organizer.value.push(option);
+        });
+      }
       const categoryService = new CategoryService();
       categories = await categoryService.listAllCategories();
       categories.forEach((element) => {
@@ -330,12 +348,16 @@ export default defineComponent({
       return pattern.test(text)
     }
 
+
     const compareDates = ()=>{
-      if(endDateEmpty.value){
+      console.log(formData.value.endDate > formData.value.startDate)
+      return formData.value.endDate > formData.value.startDate
+
+      i/*f(endDateEmpty.value){
         return true
       } else{
         return moment(formData.value.endDate).isSameOrAfter(formData.value.startDate)
-      }
+      }*/
     }
 
     const submitFile = async (id)=>{

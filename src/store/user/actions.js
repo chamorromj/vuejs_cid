@@ -8,7 +8,11 @@ const mediaService = new MediaService();
 
 export async function createUser({ commit }, userData) {
   try {
-    const user = await userService.registerUser(userData);
+    const user = await userService.registerUser(userData)
+    console.log(user)
+    if(user.favorites == null){
+      user.favorites = []
+    }
     if (!user){
       return false
     } else{
@@ -62,6 +66,9 @@ export async function signInUser({ commit }, userData) {
     localStorage.setItem("userId", userId)
 
     const user = await userService.getUserById(userId)
+    if(user.favorites == null){
+      user.favorites = []
+    }
 
     commit("loginUser", {user, token});
 
@@ -91,6 +98,9 @@ export async function checkAuthentication({ commit }) {
   }
   try {
     const user = await userService.getUserById(userId);
+    if(user.favorites == null){
+      user.favorites = []
+    }
     if(!user){
       commit("logout")
       location.replace("/")

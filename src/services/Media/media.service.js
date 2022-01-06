@@ -133,6 +133,8 @@ export default class MediaService {
         body: JSON.stringify(favorite),
       };
       response = await fetch(url, params);
+      console.log(favorite)
+      console.log(response)
       if(response.status === 401){
         return userService.logoutTokenExpired()
       }

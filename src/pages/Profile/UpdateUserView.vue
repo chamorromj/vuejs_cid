@@ -223,6 +223,7 @@ export default defineComponent({
     onBeforeMount(async ()=>{
       if (!user.value){
         user.value = userService.getUserById(route.params.id)
+
       }
 
       usernameOriginal.value = user.value.username

@@ -16,6 +16,9 @@ export function addRatting(state, ratting) {
 export function loginUser(state, {user, token}) {
   state.user = user
   state.token = token
+  localStorage.setItem("token", token)
+  localStorage.setItem("userId", user.id)
+
 
   if(user){
     const role = user.roleId

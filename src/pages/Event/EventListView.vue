@@ -18,13 +18,8 @@
         :columns="columns"
         row-key="id"
         :loading="loading"
+        no-data-label="There are no events for the event organizers assigned to you"
       >
-<!--        <template #loading>
-          <q-inner-loading
-            showing
-            color="primary"
-          />
-        </template>-->
         <template v-slot:body-cell-action="props">
           <q-td :props="props">
             <q-btn
@@ -191,26 +186,33 @@ export default defineComponent({
       const eventService = new EventService();
       const eventOrganizerService = new EventOrganizerService()
       const organizers= await eventOrganizerService.getEventOrganizersByAdministrator(userId);
-      for (const organizer of organizers) {
-        const organizerEvents = await eventService.getEventsByAdministratorEventOrganizers(organizer.id);
-        organizerEvents.forEach((event)=>{
-          eventsToList.push(event)
-        })
+      console.log(organizers)
+      if(organizers){
+        for (const organizer of organizers) {
+          const organizerEvents = await eventService.getEventsByAdministratorEventOrganizers(organizer.id);
+          organizerEvents.forEach((event)=>{
+            eventsToList.push(event)
+          })
+        }
+        store.commit("event/setEvents", eventsToList)
+        const tempArray = [];
+        eventsToList.forEach((element) => {
+          const event = [];
+          event.id = element.id;
+          event.name = element.name;
+          event.description = element.description;
+          event.avgRate = element.avgRate;
+          event.url = element.url;
+          event.startDate = formatDate(element.startDate);
+          event.endDate = formatDate(element.endDate);
+          tempArray.push(event);
+        });
+        rows.value = tempArray;
       }
-      store.commit("event/setEvents", eventsToList)
-      const tempArray = [];
-      eventsToList.forEach((element) => {
-        const event = [];
-        event.id = element.id;
-        event.name = element.name;
-        event.description = element.description;
-        event.avgRate = element.avgRate;
-        event.url = element.url;
-        event.startDate = formatDate(element.startDate);
-        event.endDate = formatDate(element.endDate);
-        tempArray.push(event);
-      });
-      rows.value = tempArray;
+      else {
+        rows.value = []
+      }
+
 
 
       loading.value = false

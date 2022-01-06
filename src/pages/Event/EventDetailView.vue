@@ -81,9 +81,14 @@
                      :src= "`data:image/png;base64,${event.img}`" :alt="event.name" />
               <div class="row q-pt-sm justify-between">
                 <q-btn class="col-12 q-mt-sm" icon="home" label="HOME" color="primary" to="/" />
-
+                <q-btn
+                  class="col-12 q-mt-sm"
+                  v-if="isPastEvent(event.startDate)"
+                  disable
+                  color="deep-orange-9"
+                  label="EVENT ENDED"/>
                 <q-btn class="col-12 q-mt-sm"
-                  v-if="user && arethereReaminingTickets"
+                  v-else-if="user && arethereReaminingTickets"
                   color="primary"
                   icon="shopping_cart"
                   label="Book"
@@ -100,9 +105,11 @@
                        v-if="user"
                        icon="send"
                        label="SUGGEST"
+                       disable
                        color="primary"
                        @click="show_suggest = true"
                 />
+
                 <q-btn class="col-12 q-mt-sm"
                        v-if="isOnUserFavorites(event.id)"
                        icon="favorite"
@@ -197,17 +204,19 @@ export default {
   },
 
   watch: {
-    $route(to, from) {
-      if(to.name){
-        console.log(to.name)
-      } else {
-        if(to.name && to.name.includes("event")){
-          this.getEvent(to.params.id)
-        } else {
+      $route(to, from) {
+        if(to.name){
           console.log(to.name)
+        } else {
+          if(to.name && to.name.includes("event")){
+            this.getEvent(to.params.id)
+          } else {
+            const eventId = this.$store.getters["event/getEventId"]
+            this.getEvent(eventId)
+          }
         }
-      }
-    },
+      },
+
   },
   setup() {
     const eventprofileService = new EventProfileService()
@@ -219,7 +228,6 @@ export default {
     const $q = useQuasar()
 
     const show_commentForm = ref(false)
-    const route = useRoute()
     const router = useRouter()
     const event = computed(() => store.getters["event/getEvent"])
     const user = computed(() => store.getters["user/getUser"])
@@ -232,6 +240,8 @@ export default {
 
 
     onMounted(async () => {
+      const eventId = store.getters["event/getEventId"]
+      getEvent(eventId)
       let userId = (!user.value) ? localStorage.getItem("userId") : user.value.id
       if(userId){
         let favs = await mediaService.listAllFavoritesByUser(userId)
@@ -239,7 +249,19 @@ export default {
       }
     });
 
+    const formatDateForDataBase = (anyDate) =>{
+      return date.formatDate(anyDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+    }
+
+    const isPastEvent = (anyDate)=> {
+      return anyDate < formatDateForDataBase(Date.now())
+    }
+
     const getEvent = async (eventId) => {
+      if (isNaN(eventId)){
+        console.log(eventId)
+        eventId = store.getters["event/getEventId"]
+      }
           $q.loading.show({
             spinner: QSpinnerGears,
             spinnerColor: 'primary',
@@ -307,6 +329,8 @@ export default {
       show_suggest,
       show_order,
       isOnUserFavorites,
+      formatDateForDataBase,
+      isPastEvent,
       isStandardUser: store.getters["user/isStandardUser"],
       arethereReaminingTickets: store.getters["event/arethereReaminingTickets"],
       getEvent,

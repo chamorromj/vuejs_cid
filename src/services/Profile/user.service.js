@@ -135,8 +135,11 @@ export default class UserService {
   }
 
   async logoutTokenExpired(){
-    store.commit("user/removeUser")
-    this.removeToken()
+    if(localStorage.getItem("userId")){
+      store.commit("user/removeUser")
+    } else{
+      await this.logout()
+    }
     Notify.create({
       type: 'warning', message: 'The time of connection has expired'
     })

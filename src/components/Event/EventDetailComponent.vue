@@ -76,7 +76,7 @@
       </div>
     </q-card-section>
     <q-card-section class="justify-between">
-      <q-chip icon="event" v-if="!isPastEvent" class="q-pa-md" square color="primary" >{{ formatDate(event.startDate) }}</q-chip>
+      <q-chip icon="event" v-if="!isPastEvent(event.startDate)" class="q-pa-md" square color="primary" >{{ formatDate(event.startDate) }}</q-chip>
 
       <q-chip icon="event" v-else class="q-pa-md" square color="secondary" >{{ formatDate(event.startDate) }}</q-chip>
       <q-chip square  class="q-pa-md">
@@ -105,9 +105,14 @@
         @click="callToRegister"
       />
 
-
       <q-btn
-        v-if="user && !isNotSoldOut"
+        class="q-px-md"
+        v-if="isPastEvent(event.startDate)"
+        disable
+        color="deep-orange-9"
+        label="EVENT ENDED"/>
+      <q-btn
+        v-else-if="user && !isNotSoldOut"
         flat
         color="primary"
         icon="shopping_cart"
@@ -129,6 +134,7 @@
         label="Register"
         to="/register"
       />
+
     </q-card-actions>
   </q-card>
 
@@ -163,8 +169,16 @@ export default {
     const today = Date.now()
 
 
-    const isPastEvent = ()=> {
-      return moment(props.event.startDate).isSameOrBefore(Date.now())
+    const formatToShow = (anyDate) =>{
+      return date.formatDate(anyDate, 'DD-MM-YYYY HH:mm')
+    }
+
+    const formatDateForDataBase = (anyDate) =>{
+      return date.formatDate(anyDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+    }
+
+    const isPastEvent = (anyDate)=> {
+      return anyDate < formatDateForDataBase(Date.now())
     }
 
     const formatDate = (anyDate) => {
@@ -193,6 +207,8 @@ export default {
       formatTime,
       isPastEvent,
       isNotSoldOut: props.event.availableTickets === 0,
+      formatToShow,
+      formatDateForDataBase,
       today,
       show_suggest,
       show_order,

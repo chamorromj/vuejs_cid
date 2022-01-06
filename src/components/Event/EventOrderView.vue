@@ -73,7 +73,6 @@ export default {
     const numberOfTickets = ref(0);
 
     const buyTickets = async ()=>{
-
       if(numberOfTickets.value >0){
         if(numberOfTickets.value > props.event.availableTickets){
           let message = 'Sorry, not enough tickets remaining for this event. They are only ' + props.event.availableTickets + ' tickets available'
