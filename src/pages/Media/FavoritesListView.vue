@@ -52,7 +52,7 @@
           </q-tr>
           <q-tr v-show="props.expand" :props="props">
             <q-td colspan="100%">
-              <div class="text-left ellipsis wrap">{{ props.row.description }}.</div>
+              <div class="text-left ellipsis" style="white-space: break-spaces">{{ props.row.description }}.</div>
             </q-td>
           </q-tr>
         </template>
