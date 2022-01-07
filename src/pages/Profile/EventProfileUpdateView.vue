@@ -356,7 +356,8 @@ export default defineComponent({
     };
 
     const formatToShow = (anyDate) =>{
-      return date.formatDate(anyDate, 'DD-MM-YYYY HH:mm')
+      let ret = date.formatDate(anyDate, 'DD-MM-YYYY HH:mm')
+      return ret
     }
 
     const formatDateForDataBase = (anyDate) =>{
@@ -371,7 +372,16 @@ export default defineComponent({
       if(endDateEmpty.value){
         return true
       } else{
-        return moment(formatToShow(endDate.value)).isSameOrAfter(startDate.value)
+        //let endDateStrAux = formatToShow(endDate.value)
+        //let endDateStrAux = endDate.value
+        //let ret = moment(endDateStrAux).isSameOrAfter(startDate.value)
+
+        const formatDate = "DD-MM-YYYY hh:mm"
+        const startValueDate = moment(startDate.value, formatDate)
+        const endValueDate = moment(endDate.value, formatDate)
+
+        let ret = startValueDate.isSameOrBefore(endValueDate)
+        return ret
       }
     }
 
