@@ -24,7 +24,7 @@
       </template>
 
       <template v-slot:control>
-        <div class="self-center full-width no-outline" tabindex="0">
+        <div class="self-center full-width no-outline" tabindex="0"  style="white-space: break-spaces">
            {{ question.message }}
         </div>
       </template>

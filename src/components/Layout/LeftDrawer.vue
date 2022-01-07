@@ -1,5 +1,6 @@
 <template>
   <q-drawer
+    overlay
     :width="250"
     class="bg-primary overflow-auto"
     side="left"

@@ -81,7 +81,7 @@
                     <template v-slot:prepend>
                       <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy transition-show="scale" transition-hide="scale">
-                          <q-date v-model="formData.startDate" mask="YYYY-MM-DD HH:mm" :options="dateOptions">
+                          <q-date v-model="formData.startDate" mask="DD-MM-YYYY HH:mm" :options="dateOptions">
                             <div class="row items-center justify-end q-gutter-sm">
                               <q-btn label="CLEAN" color="secondary" @click="formData.startDate=null" flat v-close-popup />
                               <q-btn label="SET" color="primary" flat v-close-popup />
@@ -93,7 +93,7 @@
                     <template v-slot:append>
                       <q-icon name="access_time" class="cursor-pointer">
                         <q-popup-proxy transition-show="scale" transition-hide="scale">
-                          <q-time v-model="formData.startDate" mask="YYYY-MM-DD HH:mm" format24h>
+                          <q-time v-model="formData.startDate" mask="DD-MM-YYYY HH:mm" format24h>
                             <div class="row items-center justify-end q-gutter-sm">
                               <q-btn label="CLEAN" color="secondary" @click="formData.startDate=null"
                                      flat v-close-popup />
@@ -116,15 +116,8 @@
                         <q-popup-proxy transition-show="scale" transition-hide="scale">
                           <q-date
                           v-model="formData.endDate"
-                          mask="YYYY-MM-DD HH:mm"
-                          :options="dateOptions"
-                          lazy-rules
-                          :rules="[
-                          (val) =>
-                          (val < formData.startDate) ||
-                          'The end date can not be previous to the start date',
-                          ]"
-                          >
+                          mask="DD-MM-YYYY HH:mm"
+                          :options="dateOptions">
                             <div class="row items-center justify-end q-gutter-sm">
                               <q-btn label="CLEAN" color="secondary" @click="formData.endDate=null" flat v-close-popup />
                               <q-btn label="SET" color="primary" flat v-close-popup />
@@ -136,7 +129,7 @@
                     <template v-slot:append>
                       <q-icon name="access_time" class="cursor-pointer">
                         <q-popup-proxy transition-show="scale" transition-hide="scale">
-                          <q-time v-model="formData.endDate" mask="YYYY-MM-DD HH:mm" format24h >
+                          <q-time v-model="formData.endDate" mask="DD-MM-YYYY HH:mm" format24h >
                             <div class="row items-center justify-end q-gutter-sm">
                               <q-btn label="CLEAN" color="secondary" @click="formData.endDate=null" flat v-close-popup />
                               <q-btn label="SET" color="primary" flat v-close-popup />
@@ -350,14 +343,7 @@ export default defineComponent({
 
 
     const compareDates = ()=>{
-      console.log(formData.value.endDate > formData.value.startDate)
-      return formData.value.endDate > formData.value.startDate
-
-      i/*f(endDateEmpty.value){
-        return true
-      } else{
-        return moment(formData.value.endDate).isSameOrAfter(formData.value.startDate)
-      }*/
+      return formData.value.startDate > formData.value.endDate
     }
 
     const submitFile = async (id)=>{
@@ -369,8 +355,8 @@ export default defineComponent({
       if(formData.value.endDate !== null && formData.value.endDate){
         endDateEmpty.value = false
       }
-      formData.value.startDate =  formatDateForDataBase(formData.value.startDate);
-      formData.value.endDate =  formatDateForDataBase(formData.value.endDate);
+      formData.value.startDate =  formatDateForDataBase(formData.value.startDate)
+      formData.value.endDate =  formatDateForDataBase(formData.value.endDate)
       formData.value.avgRate = 0
 
       if(!formData.value.eventOrganizerId){
@@ -390,7 +376,7 @@ export default defineComponent({
         formData.value.endDate = null
         tab.value='data'
       } else if(formData.value.availableTickets <= 0){
-        $q.notify({ type: 'warning', message: "Number of available tickets can't be negative or zero" })
+        $q.notify({ type: 'warning', message: "Initial number of available tickets can't be negative or zero" })
         formData.value.availableTickets = 200
         tab.value='data'
       } else if(!formData.value.url){

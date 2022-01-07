@@ -22,7 +22,7 @@
             <q-item-section>
               <q-item-label v-if="comment.name">{{ comment.name }}</q-item-label>
               <q-item-label v-else>Anonymous</q-item-label>
-              <q-item-label caption :lines="2" class="wrap">{{ comment.comment }}</q-item-label>
+              <q-item-label caption :lines="2" class="wrap" style="white-space: break-spaces">{{ comment.comment }}</q-item-label>
             </q-item-section>
 
             <q-item-section side top>

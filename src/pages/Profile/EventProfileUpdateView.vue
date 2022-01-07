@@ -76,7 +76,7 @@
                   <template v-slot:prepend>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-date v-model="startDate" mask="YYYY-MM-DD HH:mm" :options="dateOptions">
+                        <q-date v-model="startDate" mask="DD-MM-YYYY HH:mm" :options="dateOptions">
                           <div class="row items-center justify-end q-gutter-sm">
                             <q-btn label="CLEAN" color="secondary" @click="startDate=null" flat v-close-popup />
                             <q-btn label="SET" color="primary" flat v-close-popup />
@@ -88,7 +88,7 @@
                   <template v-slot:append>
                     <q-icon name="access_time" class="cursor-pointer">
                       <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-time v-model="startDate" mask="YYYY-MM-DD HH:mm" format24h>
+                        <q-time v-model="startDate" mask="DD-MM-YYYY HH:mm" format24h>
                           <div class="row items-center justify-end q-gutter-sm">
                             <q-btn label="CLEAN" color="secondary" @click="startDate=null" flat v-close-popup />
                             <q-btn label="SET" color="primary" flat v-close-popup />
@@ -108,7 +108,14 @@
                   <template v-slot:prepend>
                     <q-icon name="event" class="cursor-pointer">
                       <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-date v-model="endDate" mask="YYYY-MM-DD HH:mm" :options="dateOptions">
+                        <q-date v-model="endDate" mask="DD-MM-YYYY HH:mm" :options="dateOptions"
+                                lazy-rules
+                                :rules="[
+                                (val) =>
+                                (val > startDate) ||
+                                'The end date can not be previous to the start date',
+                                ]"
+                        >
                           <div class="row items-center justify-end q-gutter-sm">
                             <q-btn label="CLEAN" color="secondary" @click="endDate=null" flat v-close-popup />
                             <q-btn label="SET" color="primary" flat v-close-popup />
@@ -120,7 +127,7 @@
                   <template v-slot:append>
                     <q-icon name="access_time" class="cursor-pointer">
                       <q-popup-proxy transition-show="scale" transition-hide="scale">
-                        <q-time v-model="endDate" mask="YYYY-MM-DD HH:mm" format24h>
+                        <q-time v-model="endDate" mask="DD-MM-YYYY HH:mm" format24h>
                           <div class="row items-center justify-end q-gutter-sm">
                             <q-btn label="CLEAN" color="secondary" @click="endDate=null" flat v-close-popup />
                             <q-btn label="SET" color="primary" flat v-close-popup />
@@ -357,8 +364,7 @@ export default defineComponent({
     }
 
     const isValidDateTime = (datetime) =>{
-      let now = date.formatDate(Date.now(), 'YYYY-MM-DDTHH:mm:ss.SSSZ')
-      return moment(datetime).isSameOrAfter(now)
+      return datetime > formatToShow(Date.now())
     }
 
     const compareDates = ()=>{
@@ -407,11 +413,11 @@ export default defineComponent({
         } else if(!startDate.value){
           $q.notify({ type: 'warning', message: 'You must inform the start date' })
           tab.value='data'
-        } else if(startDate.value!==formatToShow(event.value.startDate) && !isValidDateTime(startDate.value)){
-          $q.notify({ type: 'warning', message: "You can not create an event for a previous datetime" })
+        } else if(startDate.value!==formatToShow(event.value.startDate) && startDate.value < formatToShow(Date.now())){
+          $q.notify({ type: 'warning', message: "You can not create an event for a date passed" })
           startDate.value = formatToShow(startDateWithoutChanges.value)
           tab.value='data'
-        } else if(!compareDates()){
+        } else if(startDate.value > endDate.value){
           $q.notify({ type: 'warning', message: "You can not create an event for a previous datetime" })
           endDate.value = formatToShow(endDateWithoutChanges.value)
           tab.value='data'
@@ -419,8 +425,8 @@ export default defineComponent({
           $q.notify({ type: 'warning', message: "End date can not be previous than start date" })
           endDate.value = formatToShow(endDateWithoutChanges.value)
           tab.value='data'
-        } else if(availableTickets.value <= 0){
-          $q.notify({ type: 'warning', message: "Number of available tickets can't be negative or zero" })
+        } else if(availableTickets.value < 0){
+          $q.notify({ type: 'warning', message: "Number of available tickets can't be negative" })
           availableTickets.value = event.value.availableTickets
           tab.value='data'
         } else if(url.value === ''){
